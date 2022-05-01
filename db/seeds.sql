@@ -1,0 +1,17 @@
+INSERT INTO department (name)
+VALUES
+  ('Tech'),
+  ('Medical');
+
+INSERT INTO job_role (title, salary, department_id)
+VALUES
+  ('Engineering', '140000', 1),
+  ('Doctor', '200000', 2);
+
+
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES
+  ('Carlos', 'Sabbah', 1, 2),
+  ('Grace', 'Sabbah', 2, 3);
+
+
