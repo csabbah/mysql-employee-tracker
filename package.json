@@ -1,0 +1,28 @@
+{
+  "name": "mysql-employee-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csabbah/mysql-employee-tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/csabbah/mysql-employee-tracker/issues"
+  },
+  "homepage": "https://github.com/csabbah/mysql-employee-tracker#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "mysql2": "^2.3.3"
+  },
+  "devDependencies": {
+    "jest": "^28.0.3"
+  }
+}
