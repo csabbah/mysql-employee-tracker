@@ -48,11 +48,22 @@ promptOptions().then((selectedOption) => {
     handleQuery(sql, null, 'Departments');
   }
   if (optionPicked == 'View all roles') {
-    const sql = `SELECT * FROM role`;
+    const sql = `SELECT role.*, department.name AS department_name
+    FROM role
+    LEFT JOIN department
+    ON role.department_id = department.id;
+    `;
+
     handleQuery(sql, null, 'Roles');
   }
+
   if (optionPicked == 'View all employees') {
-    const sql = `SELECT * FROM employee`;
+    const sql = `SELECT employee.*, role.title AS job_title, role.salary, department.name AS department_name
+    FROM employee 
+    LEFT OUTER JOIN role ON employee.role_id = role.id
+    LEFT OUTER JOIN department ON role.department_id = department.id ORDER BY employee.role_id;
+    `;
+    // const sql = `SELECT * FROM employee, role.id; FROM employee; LEFT JOIN role ON employee.role_id = role.id;`;
     handleQuery(sql, null, 'Employees');
   }
   // ------------------------------------------------------------ --- --- --- --- ADD DATA
