@@ -7,7 +7,7 @@ const promptOptions = () => {
   return inquirer.prompt([
     {
       type: 'list',
-      name: 'options',
+      name: 'optionPicked',
       message: 'What would you like to do?',
       choices: [
         'View all departments',
@@ -30,8 +30,10 @@ const promptOptions = () => {
 };
 
 promptOptions().then((selectedOption) => {
-  console.log(selectedOption);
-  if (selectedOption.options == 'View all departments') {
+  const { optionPicked } = selectedOption; // Extract the value from the object
+
+  // Execute the conditionals to return the appropriate data
+  if (optionPicked == 'View all departments') {
     const sql = `SELECT * FROM department`; // Select all data from the department table
     db.query(sql, (err, rows) => {
       if (err) {
@@ -43,6 +45,34 @@ promptOptions().then((selectedOption) => {
         data: rows,
       });
       process.exit(); // Terminate command line after returning data
+    });
+  }
+  if (optionPicked == 'View all roles') {
+    const sql = `SELECT * FROM role`;
+    db.query(sql, (err, rows) => {
+      if (err) {
+        res.status(500).console.log({ error: err.message });
+        return;
+      }
+      console.log({
+        message: 'success',
+        data: rows,
+      });
+      process.exit();
+    });
+  }
+  if (optionPicked == 'View all employees') {
+    const sql = `SELECT * FROM employee`;
+    db.query(sql, (err, rows) => {
+      if (err) {
+        res.status(500).console.log({ error: err.message });
+        return;
+      }
+      console.log({
+        message: 'success',
+        data: rows,
+      });
+      process.exit();
     });
   }
 });

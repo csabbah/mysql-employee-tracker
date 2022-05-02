@@ -3,7 +3,7 @@ VALUES
   ('Tech'),
   ('Medical');
 
-INSERT INTO job_role (title, salary, department_id)
+INSERT INTO role (title, salary, department_id)
 VALUES
   ('Engineering', '140000', 1),
   ('Doctor', '200000', 2);

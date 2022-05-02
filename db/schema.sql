@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS department;
-DROP TABLE IF EXISTS job_role;
+DROP TABLE IF EXISTS role;
 DROP TABLE IF EXISTS employee;
 
 CREATE TABLE department (
@@ -7,7 +7,7 @@ CREATE TABLE department (
   name VARCHAR(30) NOT NULL -- department name
 );
 
-CREATE TABLE job_role (
+CREATE TABLE role (
   id INTEGER AUTO_INCREMENT PRIMARY KEY, -- role id
   title VARCHAR(30) NOT NULL, -- role title
   salary DECIMAL NOT NULL, -- role salary
@@ -21,5 +21,5 @@ CREATE TABLE employee (
   last_name VARCHAR(30) NOT NULL, -- employee last name
   role_id INTEGER, -- references emeployee role 
   manager_id INTEGER NULL, -- references the manager associated with employee 
-  CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES job_role(id) ON DELETE SET NULL
+  CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE SET NULL
 );
