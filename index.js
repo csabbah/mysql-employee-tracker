@@ -10,14 +10,14 @@ const promptOptions = () => {
       name: 'optionPicked',
       message: 'What would you like to do?',
       choices: [
-        'View all departments',
-        'View all roles',
-        'View all employees',
+        'View all departments', // done
+        'View all roles', // done
+        'View all employees', // done
         'View employees by manager',
         'View employees by department',
-        'Add a department',
-        'Add a role',
-        'Add an employee',
+        'Add a department', // done
+        'Add a role', // done
+        'Add an employee', // done
         'Delete department(s)',
         'Delete role(s)',
         'Delete an employee(s)',
@@ -29,18 +29,30 @@ const promptOptions = () => {
   ]);
 };
 
-function checkResults(sql) {
-  db.query(sql, (err, rows) => {
-    if (err) {
-      console.log({ error: err.message });
-      return;
-    }
-    console.log({
-      message: 'success',
-      data: rows,
+function checkResults(sql, params) {
+  if (params) {
+    // If params exist, that means we're attempting to add data
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log(result);
+      process.exit(); // Terminate command line after returning data
     });
-    process.exit(); // Terminate command line after returning data
-  });
+  } else {
+    // If params does not exist, that means we're just viewing the data
+    db.query(sql, (err, rows) => {
+      if (err) {
+        console.log({ error: err.message });
+        return;
+      }
+      console.log({
+        message: 'success',
+        data: rows,
+      });
+      process.exit(); // Terminate command line after returning data
+    });
+  }
 }
 
 promptOptions().then((selectedOption) => {
@@ -58,5 +70,26 @@ promptOptions().then((selectedOption) => {
   if (optionPicked == 'View all employees') {
     const sql = `SELECT * FROM employee`;
     checkResults(sql);
+  }
+  if (optionPicked == 'Add a department') {
+    // Create a candidate
+    const sql = `INSERT INTO department (name) 
+              VALUES (?)`;
+    const params = ['Law'];
+    checkResults(sql, params);
+  }
+  if (optionPicked == 'Add a role') {
+    // Create a candidate
+    const sql = `INSERT INTO role (title, salary, department_id) 
+              VALUES (?,?,?)`;
+    const params = ['Criminal Law', '140000', 3];
+    checkResults(sql, params);
+  }
+  if (optionPicked == 'Add an employee') {
+    // Create a candidate
+    const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) 
+              VALUES (?,?,?,?)`;
+    const params = ['Carlos', 'Sabbah', 2, 1];
+    checkResults(sql, params);
   }
 });
