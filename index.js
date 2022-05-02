@@ -1,10 +1,8 @@
 // Import the required modules
 const inquirer = require('inquirer');
-// Import the data base connection boiler plate
-const db = require('./db/connection');
-// Connect the database and display a log of it
-db.connect(console.log('Database connected.'));
-const cTable = require('console.table');
+
+// Import the function that handles the SQL commands
+const handleQuery = require('./db/queryHandling');
 
 // The executes the initial prompt with the list of options
 const promptOptions = () => {
@@ -35,32 +33,6 @@ const promptOptions = () => {
   ]);
 };
 
-// This functions takes sql commands (and in some cases also includes then params) and then...
-// handles the queries to return the data accordingly
-function handleQuery(sql, params) {
-  if (params) {
-    // If params exist, that means we're attempting to add data
-    db.query(sql, params, (err, result) => {
-      if (err) {
-        console.log(err);
-      }
-      console.log(result); // Return the appropriate result
-      process.exit(); // Terminate command line after returning data
-    });
-  } else {
-    // If params does not exist, that means we're just viewing the data
-    db.query(sql, (err, rows) => {
-      if (err) {
-        console.log({ error: err.message });
-        return;
-      }
-      const table = cTable.getTable(rows);
-      console.log(table);
-      process.exit();
-    });
-  }
-}
-
 // Execute the prompts and then extract the data...
 promptOptions().then((selectedOption) => {
   // From here, destructure the object and pull just the string data
@@ -71,15 +43,17 @@ promptOptions().then((selectedOption) => {
   // ---- ---- ---- View all rows from a table depending on the chosen prompt
   if (optionPicked == 'View all departments') {
     const sql = `SELECT * FROM department`;
-    handleQuery(sql);
+    // Add a label parameter so we can label the table before we display it
+    // And add 'null' since we are not using the params parameter
+    handleQuery(sql, null, 'Departments');
   }
   if (optionPicked == 'View all roles') {
     const sql = `SELECT * FROM role`;
-    handleQuery(sql);
+    handleQuery(sql, null, 'Roles');
   }
   if (optionPicked == 'View all employees') {
     const sql = `SELECT * FROM employee`;
-    handleQuery(sql);
+    handleQuery(sql, null, 'Employees');
   }
   // ------------------------------------------------------------ --- --- --- --- ADD DATA
   // ---- ---- ---- Add a row of data into a table depending on the chosen prompt
