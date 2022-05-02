@@ -4,6 +4,7 @@ const inquirer = require('inquirer');
 const db = require('./db/connection');
 // Connect the database and display a log of it
 db.connect(console.log('Database connected.'));
+const cTable = require('console.table');
 
 // The executes the initial prompt with the list of options
 const promptOptions = () => {
@@ -53,10 +54,8 @@ function handleQuery(sql, params) {
         console.log({ error: err.message });
         return;
       }
-      console.log({
-        message: 'success',
-        data: rows,
-      });
+      const table = cTable.getTable(rows);
+      console.log(table);
       process.exit();
     });
   }

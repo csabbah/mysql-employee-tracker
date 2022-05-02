@@ -14,4 +14,3 @@ VALUES
   ('Carlos', 'Sabbah', 1, 2),
   ('Grace', 'Sabbah', 2, 3);
 
-
