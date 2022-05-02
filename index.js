@@ -18,9 +18,9 @@ const promptOptions = () => {
         'Add a department', // done
         'Add a role', // done
         'Add an employee', // done
-        'Delete department(s)',
-        'Delete role(s)',
-        'Delete an employee(s)',
+        'Delete a department',
+        'Delete a role',
+        'Delete an employee',
         'Update an employee role',
         'Update an employees manager',
         'View total utilized budget of a department',
@@ -58,6 +58,7 @@ function checkResults(sql, params) {
 promptOptions().then((selectedOption) => {
   const { optionPicked } = selectedOption; // Extract the value from the object
 
+  // -------------------------------------------------- VIEW DATA
   // Execute the conditionals to return the appropriate data
   if (optionPicked == 'View all departments') {
     const sql = `SELECT * FROM department`; // Select all data from the department table
@@ -71,6 +72,7 @@ promptOptions().then((selectedOption) => {
     const sql = `SELECT * FROM employee`;
     checkResults(sql);
   }
+  // -------------------------------------------------- ADD DATA
   if (optionPicked == 'Add a department') {
     // Create a candidate
     const sql = `INSERT INTO department (name) 
@@ -90,6 +92,25 @@ promptOptions().then((selectedOption) => {
     const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) 
               VALUES (?,?,?,?)`;
     const params = ['Carlos', 'Sabbah', 2, 1];
+    checkResults(sql, params);
+  }
+  // -------------------------------------------------- DELETE DATA
+  if (optionPicked == 'Delete a department') {
+    const sql = `DELETE FROM department WHERE id = ?`; // Delete a row from department
+    const params = [3]; // Delete the department with ID of 3
+
+    checkResults(sql, params);
+  }
+  if (optionPicked == 'Delete a role') {
+    const sql = `DELETE FROM role WHERE id = ?`; // Delete a row from role
+    const params = [3]; // Delete the role with ID of 3
+
+    checkResults(sql, params);
+  }
+  if (optionPicked == 'Delete an employee') {
+    const sql = `DELETE FROM employee WHERE id = ?`; // Delete a row from employee
+    const params = [3]; // Delete the employee with ID of 3
+
     checkResults(sql, params);
   }
 });
