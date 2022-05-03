@@ -25,9 +25,9 @@ const promptOptions = () => {
         'Add a department', // semi-done -- add validator to execute if user tries to add existing data
         'Add a role', // semi-done -- add validator to execute if user tries to add existing data
         'Add an employee',
-        'Delete a department', // done
-        'Delete a role', // done
-        'Delete an employee', // done
+        'Delete a department', // semi-done -- need to add the inputted data as the parameter
+        'Delete a role', // semi-done -- -- need to add the inputted data as the parameter
+        'Delete an employee', // semi-done -- need to add the inputted data as the parameter
         'Update an employee role',
         'Update an employees manager',
         'View total utilized budget of a department',
@@ -92,6 +92,30 @@ const promptAddRole = () => {
           return true;
         } else {
           console.log('You need to enter a department name!');
+          return false;
+        }
+      },
+    },
+  ]);
+};
+
+const promptUpdateRole = () => {
+  return inquirer.prompt([
+    {
+      type: 'list',
+      name: 'employeeId',
+      message: 'Which employee would you like to do update? (Required)',
+      options: ['test', 'test2'],
+    },
+    {
+      type: 'input',
+      name: 'roleToUpdate',
+      message: 'Please provide the new role: (Required)',
+      validate: (roleToUpdate) => {
+        if (roleToUpdate) {
+          return true;
+        } else {
+          console.log('You need to enter a salary!');
           return false;
         }
       },
@@ -175,6 +199,7 @@ promptOptions().then((selectedOption) => {
       });
     });
   }
+
   if (optionPicked == 'Add an employee') {
     const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) 
               VALUES (?,?,?,?)`;
@@ -188,14 +213,33 @@ promptOptions().then((selectedOption) => {
     const params = [3]; // Delete the department with ID of 3
     handleQuery(sql, params);
   }
+
   if (optionPicked == 'Delete a role') {
     const sql = `DELETE FROM role WHERE id = ?`;
     const params = [3];
     handleQuery(sql, params);
   }
+
   if (optionPicked == 'Delete an employee') {
     const sql = `DELETE FROM employee WHERE id = ?`;
     const params = [3];
     handleQuery(sql, params);
+  }
+
+  // ------------------------------------------------------------ --- --- --- --- UPDATE DATA
+  // ---- ---- ---- Update a specific piece of data in a row depending on the chosen prompt
+  if (optionPicked == 'Update an employee role') {
+    promptUpdateRole().then((data) => {
+      console.log(data);
+      // Similar to how we did for adding roles, extract ID of the inputted role
+    });
+  }
+
+  if (optionPicked == 'employees manager') {
+  }
+
+  // ------------------------------------------------------------ --- --- --- --- RETRIEVE DATA
+  // ---- ---- ---- Returns a sum of an entire column of data
+  if (optionPicked == 'View total utilized budget of a department') {
   }
 });
