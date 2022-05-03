@@ -16,18 +16,18 @@ const promptOptions = () => {
       name: 'optionPicked', // 'optionPicked' would be the object that is declared & used below when extracting the users chosen option
       message: 'What would you like to do?', // The prompt question
       choices: [
-        // The choices are the values that get pushed into the object 'optionPicked'
-        'View all departments', // done
-        'View all roles', // done
-        'View all employees', // done
+        // The choices are the values that get pushed into the array 'optionPicked'
+        'View all departments',
+        'View all roles',
+        'View all employees',
         'View employees by manager',
         'View employees by department',
-        'Add a department', // semi-done -- add validator to execute if user tries to add existing data
-        'Add a role', // semi-done -- add validator to execute if user tries to add existing data
+        'Add a department',
+        'Add a role',
         'Add an employee',
-        'Delete a department', // semi-done -- need to add the inputted data as the parameter
-        'Delete a role', // semi-done -- -- need to add the inputted data as the parameter
-        'Delete an employee', // semi-done -- need to add the inputted data as the parameter
+        'Delete a department',
+        'Delete a role',
+        'Delete an employee',
         'Update an employee role',
         'Update an employees manager',
         'View total utilized budget of a department',
@@ -100,27 +100,59 @@ const promptAddRole = () => {
 };
 
 const promptUpdateRole = () => {
-  return inquirer.prompt([
-    {
-      type: 'list',
-      name: 'employeeId',
-      message: 'Which employee would you like to do update? (Required)',
-      options: ['test', 'test2'],
-    },
-    {
-      type: 'input',
-      name: 'roleToUpdate',
-      message: 'Please provide the new role: (Required)',
-      validate: (roleToUpdate) => {
-        if (roleToUpdate) {
-          return true;
-        } else {
-          console.log('You need to enter a salary!');
-          return false;
-        }
-      },
-    },
-  ]);
+  const sql = `SELECT employee.*, role.title AS job_title, role.salary, department.name AS department_name, role.department_id
+    FROM employee 
+    LEFT OUTER JOIN role ON employee.role_id = role.id
+    LEFT OUTER JOIN department ON role.department_id = department.id ORDER BY employee.role_id;
+    `;
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+
+    // Generate the choices to be used in the list prompts below
+    // Additionally add a fullData object to test the inputted data with
+    var choices = { employees: [], jobs: [], fullData: [] };
+    result.forEach((employee) => {
+      const { first_name, last_name, job_title, role_id, id, department_id } =
+        employee;
+      choices.employees.push(`${first_name} ${last_name}`);
+      if (!choices.jobs.includes(job_title)) {
+        choices.jobs.push(job_title);
+      }
+      choices.fullData.push({
+        // Job title, department id and role id will all be updated.
+        job_title: job_title,
+        roleId: role_id,
+        depart_id: department_id,
+        // The id below is the index to refer to when choosing which data to update
+        id: id,
+      });
+    });
+    return inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'employeeName',
+          message: 'Which employee would you like to do update? (Required)',
+          choices: choices.employees,
+        },
+        {
+          type: 'list',
+          name: 'roleToUpdate',
+          message: `Which role do you want to switch employee to? (Required)`,
+          choices: choices.jobs,
+        },
+      ])
+      .then((data) => {
+        // Take the data we received which is the name of the person to update and the job to switch to
+        console.log('Submitted data', data);
+        // Using the name of the person, find the ID. Using the chosen job title, find it's related department_id & role_id
+        // From there, insert into the column using extracted ID the new job_title, role_id and department_id
+        console.log('Full arr', choices.fullData);
+        process.exit();
+      });
+  });
 };
 
 // Execute the prompts and then extract the data...
@@ -149,7 +181,7 @@ promptOptions().then((selectedOption) => {
   }
 
   if (optionPicked == 'View all employees') {
-    const sql = `SELECT employee.*, role.title AS job_title, role.salary, department.name AS department_name
+    const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title AS job_title, department.name AS department_name, role.salary
     FROM employee 
     LEFT OUTER JOIN role ON employee.role_id = role.id
     LEFT OUTER JOIN department ON role.department_id = department.id ORDER BY employee.role_id;
@@ -167,6 +199,7 @@ promptOptions().then((selectedOption) => {
                 VALUES (?)`;
       const params = [data.departmentName]; // And add this newly extracted department as the param
       handleQuery(sql, params);
+      console.log(`Added ${data.departmentName} to the database!`);
     });
   }
 
@@ -194,6 +227,8 @@ promptOptions().then((selectedOption) => {
         // Again, data is the object that contains the submitted data via command line prompts
         const params = [data.roleName, salary, latestId];
         handleQuery(sql, params);
+        console.log(`Added ${data.roleName} to the database!`);
+
         // Exit the command line from here
         process.exit();
       });
@@ -205,6 +240,7 @@ promptOptions().then((selectedOption) => {
               VALUES (?,?,?,?)`;
     const params = ['Carlos', 'Sabbah', 2, 1];
     handleQuery(sql, params);
+    console.log(`Added Carlos to the database!`);
   }
   // ------------------------------------------------------------ --- --- --- --- DELETE DATA
   // ---- ---- ---- Delete a row of data from a table depending on the chosen prompt
@@ -229,13 +265,13 @@ promptOptions().then((selectedOption) => {
   // ------------------------------------------------------------ --- --- --- --- UPDATE DATA
   // ---- ---- ---- Update a specific piece of data in a row depending on the chosen prompt
   if (optionPicked == 'Update an employee role') {
-    promptUpdateRole().then((data) => {
-      console.log(data);
-      // Similar to how we did for adding roles, extract ID of the inputted role
-    });
+    // Since we are looking to include the name of the employees in the list input...
+    // in the promptUpdateRole function, we run a db query at the same time we prompt the questions
+    // so we can extract the names and add them to an array
+    promptUpdateRole();
   }
 
-  if (optionPicked == 'employees manager') {
+  if (optionPicked == 'Update an employees manager') {
   }
 
   // ------------------------------------------------------------ --- --- --- --- RETRIEVE DATA
