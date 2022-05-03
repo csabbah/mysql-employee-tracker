@@ -1,7 +1,7 @@
 // Import the data base connection boiler plate
 const db = require('./connection');
 // Connect the database and display a log of it
-db.connect(console.log('Database connected.'));
+db.connect(console.log('Database connected in queryHandling.js'));
 
 // Import package to illustrate the data through tables
 const cTable = require('console.table');
@@ -16,7 +16,7 @@ module.exports = (sql, params, label) => {
         console.log(err);
       }
       console.log(result); // Return the appropriate result
-      process.exit(); // Terminate command line after returning data
+      //    process.exit(); // Terminate command line after returning data
     });
   } else {
     // If params does not exist, that means we're just viewing the data

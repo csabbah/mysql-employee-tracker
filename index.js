@@ -1,8 +1,11 @@
 // Import the required modules
 const inquirer = require('inquirer');
-
 // Import the function that handles the SQL commands
 const handleQuery = require('./db/queryHandling');
+// Import the data base connection boiler plate
+const db = require('./db/connection');
+// Connect the database and display a log of it
+db.connect(console.log('Database connected in index.js'));
 
 // The executes the initial prompt with the list of options
 const promptOptions = () => {
@@ -19,9 +22,9 @@ const promptOptions = () => {
         'View all employees', // done
         'View employees by manager',
         'View employees by department',
-        'Add a department', // done
-        'Add a role', // done
-        'Add an employee', // done
+        'Add a department', // semi-done -- add validator to execute if user tries to add existing data
+        'Add a role', // semi-done -- add validator to execute if user tries to add existing data
+        'Add an employee',
         'Delete a department', // done
         'Delete a role', // done
         'Delete an employee', // done
@@ -29,6 +32,69 @@ const promptOptions = () => {
         'Update an employees manager',
         'View total utilized budget of a department',
       ],
+    },
+  ]);
+};
+
+// This executes the prompts to add a new department
+const promptAddDepartment = () => {
+  return inquirer.prompt([
+    {
+      type: 'input',
+      name: 'departmentName',
+      message: 'Provide the new department name (Required)',
+      validate: (departmentName) => {
+        if (departmentName) {
+          return true;
+        } else {
+          console.log('You need to enter a department name!');
+          return false;
+        }
+      },
+    },
+  ]);
+};
+
+const promptAddRole = () => {
+  return inquirer.prompt([
+    {
+      type: 'input',
+      name: 'roleName',
+      message: 'Provide the new role name (Required)',
+      validate: (roleName) => {
+        if (roleName) {
+          return true;
+        } else {
+          console.log('You need to enter a role name!');
+          return false;
+        }
+      },
+    },
+    {
+      type: 'input',
+      name: 'salary',
+      message: 'Provide the salary for this role (Required)',
+      validate: (salary) => {
+        if (salary) {
+          return true;
+        } else {
+          console.log('You need to enter a salary!');
+          return false;
+        }
+      },
+    },
+    {
+      type: 'input',
+      name: 'departmentName',
+      message: 'Provide the department name for this role: (Required)',
+      validate: (departmentName) => {
+        if (departmentName) {
+          return true;
+        } else {
+          console.log('You need to enter a department name!');
+          return false;
+        }
+      },
     },
   ]);
 };
@@ -47,6 +113,7 @@ promptOptions().then((selectedOption) => {
     // And add 'null' since we are not using the params parameter
     handleQuery(sql, null, 'Departments');
   }
+
   if (optionPicked == 'View all roles') {
     const sql = `SELECT role.*, department.name AS department_name
     FROM role
@@ -69,16 +136,44 @@ promptOptions().then((selectedOption) => {
   // ------------------------------------------------------------ --- --- --- --- ADD DATA
   // ---- ---- ---- Add a row of data into a table depending on the chosen prompt
   if (optionPicked == 'Add a department') {
-    const sql = `INSERT INTO department (name) 
-              VALUES (?)`;
-    const params = ['Law']; // Add a new 'Law' department
-    handleQuery(sql, params);
+    promptAddDepartment().then((data) => {
+      // Run the promptDepartment prompt and extract the new department name then....
+      // Execute the INSERT sql command
+      const sql = `INSERT INTO department (name) 
+                VALUES (?)`;
+      const params = [data.departmentName]; // And add this newly extracted department as the param
+      handleQuery(sql, params);
+    });
   }
+
   if (optionPicked == 'Add a role') {
-    const sql = `INSERT INTO role (title, salary, department_id) 
-              VALUES (?,?,?)`;
-    const params = ['Criminal Law', '140000', 3];
-    handleQuery(sql, params);
+    promptAddRole().then((data) => {
+      // This block adds the new department FIRST so we can generate the required foreign key for the role
+      const departmentSql = `INSERT INTO department (name)
+      VALUES (?)`;
+      const departmentParams = [data.departmentName]; // 'data' holds the submitted data via the command line prompts
+      handleQuery(departmentSql, departmentParams);
+
+      // This block adds the role
+      // It first extracts the latest ID from the newly created department above
+      const latestId = `SELECT max(id) from department`;
+      db.query(latestId, (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+        // This would return the id
+        var latestId = result[0]['max(id)'];
+        // This create the role using the latest id we extracted from the new department above
+        const salary = parseInt(data.salary);
+        const sql = `INSERT INTO role (title, salary, department_id)
+          VALUES (?,?,?)`;
+        // Again, data is the object that contains the submitted data via command line prompts
+        const params = [data.roleName, salary, latestId];
+        handleQuery(sql, params);
+        // Exit the command line from here
+        process.exit();
+      });
+    });
   }
   if (optionPicked == 'Add an employee') {
     const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) 
