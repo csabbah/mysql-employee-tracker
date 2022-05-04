@@ -36,6 +36,7 @@ const promptOptions = () => {
   ]);
 };
 
+// ------------------------------------------------------------ --- --- --- --- FOLLOW UP ADD DATA PROMPTS
 // This executes the prompts to add a new department
 const promptAddDepartment = () => {
   return inquirer.prompt([
@@ -99,6 +100,7 @@ const promptAddRole = () => {
   ]);
 };
 
+// ------------------------------------------------------------ --- --- --- --- FOLLOW UP UPDATE DATA PROMPTS
 const promptUpdateRole = () => {
   const sql = `SELECT employee.*, role.title AS job_title, role.salary, department.name AS department_name, role.department_id
     FROM employee 
@@ -122,6 +124,7 @@ const promptUpdateRole = () => {
       }
       choices.fullData.push({
         // Job title, department id and role id will all be updated.
+        name: [first_name, last_name],
         job_title: job_title,
         roleId: role_id,
         depart_id: department_id,
@@ -147,9 +150,137 @@ const promptUpdateRole = () => {
       .then((data) => {
         // Take the data we received which is the name of the person to update and the job to switch to
         console.log('Submitted data', data);
-        // Using the name of the person, find the ID. Using the chosen job title, find it's related department_id & role_id
-        // From there, insert into the column using extracted ID the new job_title, role_id and department_id
+        // ** ADD CODE *** Using the name of the person, find the ID. Using the chosen job title, find it's related department_id & role_id
+        // ** ADD CODE *** From there, insert into the column using extracted ID the new job_title, role_id and department_id
         console.log('Full arr', choices.fullData);
+
+        // ** ADD CODE *** Example code
+        // If (fullArr.contains('chosen employee' and 'id') {
+        // insert into (id) with (this data)
+
+        process.exit();
+      });
+  });
+};
+
+// ------------------------------------------------------------ --- --- --- --- FOLLOW UP DELETE DATA PROMPTS
+const promptDeleteEmployee = () => {
+  const sql = `SELECT employee.*, role.title AS job_title, role.salary, department.name AS department_name, role.department_id
+    FROM employee 
+    LEFT OUTER JOIN role ON employee.role_id = role.id
+    LEFT OUTER JOIN department ON role.department_id = department.id ORDER BY employee.role_id;
+    `;
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+
+    // **** ADD CODE *** This entire block can be made as one function since it is used more than once
+    var choices = { employees: [], fullData: [] };
+    result.forEach((employee) => {
+      const { first_name, last_name, job_title, role_id, id, department_id } =
+        employee;
+      choices.employees.push(`${first_name} ${last_name}`);
+
+      choices.fullData.push({
+        name: [first_name, last_name],
+        // The id below is the index to refer to when choosing which data to delete
+        id: id,
+      });
+    });
+    return inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'departmentName',
+          message: 'Which Employee would you like to delete?',
+          choices: choices.employees,
+        },
+      ])
+      .then((data) => {
+        console.log(data);
+        console.log(choices.fullData);
+        // **** ADD CODE **** Use sql command to delete the data using the extracted ID
+        process.exit();
+      });
+  });
+};
+
+const promptDeleteRole = () => {
+  const sql = `SELECT * from role`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+
+    // **** ADD CODE *** This entire block can be made as one function since it is used more than once
+    var choices = { roles: [], fullData: [] };
+    result.forEach((role) => {
+      const { title, id, department_id } = role;
+      if (!choices.roles.includes(title)) {
+        choices.roles.push(title);
+      }
+
+      choices.fullData.push({
+        title: title,
+        depart_id: department_id,
+        // The id below is the index to refer to when choosing which data to delete
+        id: id,
+      });
+    });
+    return inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'departmentName',
+          message: 'Which Role would you like to delete?',
+          choices: choices.roles,
+        },
+      ])
+      .then((data) => {
+        console.log(data);
+        console.log(choices.fullData);
+        // **** ADD CODE **** Use sql command to delete the data using the extracted ID
+        process.exit();
+      });
+  });
+};
+
+const promptDeleteDepartment = () => {
+  const sql = `SELECT * from department
+    `;
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+
+    // **** ADD CODE *** This entire block can be made as one function since it is used more than once
+    var choices = { departments: [], fullData: [] };
+    result.forEach((department) => {
+      const { id, name } = department;
+      if (!choices.departments.includes(name)) {
+        choices.departments.push(name);
+      }
+
+      choices.fullData.push({
+        depart_name: name,
+        // The id below is the index to refer to when choosing which data to delete
+        id: id,
+      });
+    });
+    return inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'departmentName',
+          message: 'Which Department would you like to delete?',
+          choices: choices.departments,
+        },
+      ])
+      .then((data) => {
+        console.log(data);
+        console.log(choices.fullData);
+        // **** ADD CODE **** Use sql command to delete the data using the extracted ID
         process.exit();
       });
   });
@@ -245,21 +376,24 @@ promptOptions().then((selectedOption) => {
   // ------------------------------------------------------------ --- --- --- --- DELETE DATA
   // ---- ---- ---- Delete a row of data from a table depending on the chosen prompt
   if (optionPicked == 'Delete a department') {
-    const sql = `DELETE FROM department WHERE id = ?`;
-    const params = [3]; // Delete the department with ID of 3
-    handleQuery(sql, params);
+    promptDeleteDepartment();
+    // const sql = `DELETE FROM department WHERE id = ?`;
+    // const params = [3]; // Delete the department with ID of 3
+    // handleQuery(sql, params);
   }
 
   if (optionPicked == 'Delete a role') {
-    const sql = `DELETE FROM role WHERE id = ?`;
-    const params = [3];
-    handleQuery(sql, params);
+    promptDeleteRole();
+    // const sql = `DELETE FROM role WHERE id = ?`;
+    // const params = [3];
+    // handleQuery(sql, params);
   }
 
   if (optionPicked == 'Delete an employee') {
-    const sql = `DELETE FROM employee WHERE id = ?`;
-    const params = [3];
-    handleQuery(sql, params);
+    promptDeleteEmployee();
+    // const sql = `DELETE FROM employee WHERE id = ?`;
+    // const params = [3];
+    // handleQuery(sql, params);
   }
 
   // ------------------------------------------------------------ --- --- --- --- UPDATE DATA
