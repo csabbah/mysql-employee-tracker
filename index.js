@@ -219,14 +219,13 @@ const promptDeleteRole = () => {
     // **** ADD CODE *** This entire block can be made as one function since it is used more than once
     var choices = { roles: [], fullData: [] };
     result.forEach((role) => {
-      const { title, id, department_id } = role;
+      const { title, id } = role;
       if (!choices.roles.includes(title)) {
         choices.roles.push(title);
       }
 
       choices.fullData.push({
         title: title,
-        depart_id: department_id,
         // The id below is the index to refer to when choosing which data to delete
         id: id,
       });
@@ -235,15 +234,21 @@ const promptDeleteRole = () => {
       .prompt([
         {
           type: 'list',
-          name: 'departmentName',
+          name: 'roleName',
           message: 'Which Role would you like to delete?',
           choices: choices.roles,
         },
       ])
       .then((data) => {
-        console.log(data);
-        console.log(choices.fullData);
-        // **** ADD CODE **** Use sql command to delete the data using the extracted ID
+        // This block of code will take the choice that was picked and compare it with the full data
+        choices.fullData.forEach((role) => {
+          // Once it finds the chosen role, it extracts the ID and initiated the SQL delete command
+          if (data.roleName == role.title) {
+            var sql = `DELETE FROM role WHERE id = ${role.id}.`;
+            handleQuery(sql, null);
+            console.log(`Successfully deleted the ${role.depart_name} role!`);
+          }
+        });
         process.exit();
       });
   });
@@ -285,7 +290,7 @@ const promptDeleteDepartment = () => {
       .then((data) => {
         // This block of code will take the choice that was picked and compare it with the full data
         choices.fullData.forEach((department) => {
-          // Once it finds the chosen department, it extracts the ID and initited the SQL delete command
+          // Once it finds the chosen department, it extracts the ID and initiated the SQL delete command
           if (data.departmentName == department.depart_name) {
             var sql = `DELETE FROM department WHERE id = ${department.id}.`;
             handleQuery(sql, null);
@@ -294,7 +299,6 @@ const promptDeleteDepartment = () => {
             );
           }
         });
-        // **** ADD CODE **** Use sql command to delete the data using the extracted ID
         process.exit();
       });
   });
