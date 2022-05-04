@@ -283,8 +283,17 @@ const promptDeleteDepartment = () => {
         },
       ])
       .then((data) => {
-        console.log(data);
-        console.log(choices.fullData);
+        // This block of code will take the choice that was picked and compare it with the full data
+        choices.fullData.forEach((department) => {
+          // Once it finds the chosen department, it extracts the ID and initited the SQL delete command
+          if (data.departmentName == department.depart_name) {
+            var sql = `DELETE FROM department WHERE id = ${department.id}.`;
+            handleQuery(sql, null);
+            console.log(
+              `Successfully deleted ${department.depart_name} and all associated roles!`
+            );
+          }
+        });
         // **** ADD CODE **** Use sql command to delete the data using the extracted ID
         process.exit();
       });
