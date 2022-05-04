@@ -1,10 +1,12 @@
 -- -- THIS COVERS THE VIEW ALL ROLES
+-- Depending on the placement in the SELECT, those are the columns that show in order from left to rightt
 -- SELECT role.*, department.name AS department_name
 -- FROM role
 -- LEFT JOIN department
 -- ON role.department_id = department.id;
 
 -- -- THIS COVERS THE VIEW ALL EMPLOYEES
+-- Depending on the placement in the SELECT, those are the columns that show in order from left to rightt
 -- -- Select all data from employee, title and salary from role and just the name value from department
 -- SELECT employee.*, role.title AS job_title, role.salary, department.name AS department_name
 -- -- Priotize the employee table
@@ -26,4 +28,22 @@
        
 
 
+-- USE company
+-- -- Depending on the placement in the SELECT, those are the columns that show in order from left to rightt
+-- SELECT employee.first_name, employee.last_name, role.title AS job_title, department.name AS department_name, role.salary, department.id AS department_id
+-- FROM employee 
+-- LEFT OUTER JOIN role ON employee.role_id = role.id
+-- LEFT OUTER JOIN department ON role.department_id = department.id 
 
+
+-- This returns related data from 3 tables and only  returns data where the department id = a certain value
+-- -- Depending on the placement in the SELECT, those are the columns that show in order from left to right
+-- SELECT employee.first_name, employee.last_name, role.title AS job_title, role.salary, department.name AS department
+-- FROM employee 
+-- LEFT OUTER JOIN role ON employee.role_id = role.id
+-- LEFT OUTER JOIN department ON role.department_id = department.id
+-- WHERE department_id = 1
+-- ORDER BY department_id
+
+
+-- source db/test.sql

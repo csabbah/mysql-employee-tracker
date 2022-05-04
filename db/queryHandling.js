@@ -23,7 +23,6 @@ module.exports = (sql, params, label) => {
         console.log(err);
       }
       console.log(result); // Return the appropriate result
-      //    process.exit(); // Terminate command line after returning data
     });
   } else {
     // If params does not exist, that means we're just viewing the data
@@ -34,9 +33,13 @@ module.exports = (sql, params, label) => {
       }
       // Generate the table using the data we received
       const table = cTable.getTable(rows);
-      // Display the table with it's associated label
-      console.log(`\n\n------------ ${label.toUpperCase()} ------------\n`);
-      console.log(table);
+      if (rows.length < 1) {
+        console.log(`\n\n------------ No data exists ------------\n`);
+      } else {
+        // Display the table with it's associated label
+        console.log(`\n\n------------ ${label.toUpperCase()} ------------\n`);
+        console.log(table);
+      }
       process.exit();
     });
   }

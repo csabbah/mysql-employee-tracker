@@ -17,20 +17,20 @@ const promptOptions = () => {
       message: 'What would you like to do?', // The prompt question
       choices: [
         // The choices are the values that get pushed into the array 'optionPicked'
-        'View all departments',
-        'View all roles',
-        'View all employees',
+        'View all departments', // DONE
+        'View all roles', // DONE
+        'View all employees', // SEMI-DONE > NEED TO UPDATE SITUATION WITH MANAGERS
         'View employees by manager',
         'View employees by department',
-        'Add a department',
-        'Add a role',
+        'Add a department', // DONE
+        'Add a role', // DONE
         'Add an employee',
-        'Delete a department',
-        'Delete a role',
-        'Delete an employee',
-        'Update an employee role',
+        'Delete a department', // DONE
+        'Delete a role', // DONE
+        'Delete an employee', // DONE
+        'Update an employee role', // DONE
         'Update an employees manager',
-        'View total utilized budget of a department',
+        'View total utilized budget of a department', // DONE
       ],
     },
   ]);
@@ -344,6 +344,62 @@ const promptDeleteDepartment = () => {
   });
 };
 
+// ------------------------------------------------------------ --- --- --- --- FOLLOW UP VIEW SPECIFIC DATA PROMPT
+const promptEmployeeDepart = () => {
+  // *** ADD CODE *** When you create the universal function for the below query, add a variable in the function
+  // FOr example i.e. sql = 'SELECT * from ${variable-name}` - Universal function should be called, 'returnListChoices(label)'
+  const sql = `SELECT * from department`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+
+    // **** ADD CODE *** This entire block can be made as one function since it is used more than once
+    var choices = { departments: [], fullData: [] };
+    result.forEach((department) => {
+      const { id, name } = department;
+      if (!choices.departments.includes(name)) {
+        choices.departments.push(name);
+      }
+
+      choices.fullData.push({
+        depart_name: name,
+        // The id below is the index to refer to when choosing which data to delete
+        id: id,
+      });
+    });
+    return inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'departmentName',
+          message: 'Which Department would you like to view all employees?',
+          choices: choices.departments,
+        },
+      ])
+      .then((data) => {
+        // This block of code will take the choice that was picked and compare it with the full data
+        choices.fullData.forEach((department) => {
+          // Once it finds the chosen department, it extracts the ID and initiated the SQL delete command
+          if (data.departmentName == department.depart_name) {
+            const sql = `
+            SELECT employee.first_name, employee.last_name, role.title AS job_title, role.salary, department.name AS department
+            FROM employee
+            LEFT OUTER JOIN role ON employee.role_id = role.id
+            LEFT OUTER JOIN department ON role.department_id = department.id
+            WHERE department_id = ${department.id}
+            ORDER BY department_id;`;
+            handleQuery(
+              sql,
+              null,
+              `All employees from the ${data.departmentName} department`
+            );
+          }
+        });
+      });
+  });
+};
+
 // Execute the prompts and then extract the data...
 promptOptions().then((selectedOption) => {
   // From here, destructure the object and pull just the string data
@@ -378,6 +434,10 @@ promptOptions().then((selectedOption) => {
     // const sql = `SELECT * FROM employee, role.id; FROM employee; LEFT JOIN role ON employee.role_id = role.id;`;
     handleQuery(sql, null, 'Employees');
   }
+
+  if (optionPicked == 'View employees by department') {
+    promptEmployeeDepart();
+  }
   // ------------------------------------------------------------ --- --- --- --- ADD DATA
   // ---- ---- ---- Add a row of data into a table depending on the chosen prompt
   if (optionPicked == 'Add a department') {
@@ -389,6 +449,7 @@ promptOptions().then((selectedOption) => {
       const params = [data.departmentName]; // And add this newly extracted department as the param
       handleQuery(sql, params);
       console.log(`Added ${data.departmentName} to the database!`);
+      process.exit(); // Terminate command line after returning dat
     });
   }
 
@@ -417,7 +478,6 @@ promptOptions().then((selectedOption) => {
         const params = [data.roleName, salary, latestId];
         handleQuery(sql, params);
         console.log(`Added ${data.roleName} to the database!`);
-
         // Exit the command line from here
         process.exit();
       });
@@ -430,6 +490,7 @@ promptOptions().then((selectedOption) => {
     const params = ['Carlos', 'Sabbah', 2, 1];
     handleQuery(sql, params);
     console.log(`Added Carlos to the database!`);
+    // process.exit(); // Terminate command line after returning data
   }
   // ------------------------------------------------------------ --- --- --- --- DELETE DATA
   // ---- ---- ---- Delete a row of data from a table depending on the chosen prompt
