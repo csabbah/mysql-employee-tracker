@@ -176,6 +176,7 @@ const promptDeleteEmployee = () => {
     }
 
     // **** ADD CODE *** This entire block can be made as one function since it is used more than once
+    // **** ADD CODE *** to delete the employee, you might not need to include other stuff like job_title, role_id and etc???)
     var choices = { employees: [], fullData: [] };
     result.forEach((employee) => {
       const { first_name, last_name, job_title, role_id, id, department_id } =
@@ -207,6 +208,8 @@ const promptDeleteEmployee = () => {
 };
 
 const promptDeleteRole = () => {
+  // *** ADD CODE *** When you create the universal function for the below query, add a variable in the function
+  // FOr example i.e. sql = 'SELECT * from ${variable-name}` - Universal function should be called, 'returnListChoices(label)'
   const sql = `SELECT * from role`;
   db.query(sql, (err, result) => {
     if (err) {
@@ -247,6 +250,8 @@ const promptDeleteRole = () => {
 };
 
 const promptDeleteDepartment = () => {
+  // *** ADD CODE *** When you create the universal function for the below query, add a variable in the function
+  // FOr example i.e. sql = 'SELECT * from ${variable-name}` - Universal function should be called, 'returnListChoices(label)'
   const sql = `SELECT * from department
     `;
   db.query(sql, (err, result) => {
