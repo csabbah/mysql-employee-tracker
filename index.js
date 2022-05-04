@@ -193,15 +193,25 @@ const promptDeleteEmployee = () => {
       .prompt([
         {
           type: 'list',
-          name: 'departmentName',
+          name: 'employeeName',
           message: 'Which Employee would you like to delete?',
           choices: choices.employees,
         },
       ])
       .then((data) => {
-        console.log(data);
-        console.log(choices.fullData);
-        // **** ADD CODE **** Use sql command to delete the data using the extracted ID
+        // This block of code will take the choice that was picked and compare it with the full data
+        choices.fullData.forEach((employee) => {
+          const firstName = data.employeeName.split(' ')[0];
+          const lastName = data.employeeName.split(' ')[1];
+          // Once it finds the chosen role, it extracts the ID and initiated the SQL delete command
+          if (firstName == employee.name[0] && lastName == employee.name[1]) {
+            var sql = `DELETE FROM employee WHERE id = ${employee.id}.`;
+            handleQuery(sql, null);
+            console.log(
+              `Successfully delted ${employee.name[0]} ${employee.name[1]}`
+            );
+          }
+        });
         process.exit();
       });
   });
@@ -246,7 +256,7 @@ const promptDeleteRole = () => {
           if (data.roleName == role.title) {
             var sql = `DELETE FROM role WHERE id = ${role.id}.`;
             handleQuery(sql, null);
-            console.log(`Successfully deleted the ${role.depart_name} role!`);
+            console.log(`Successfully deleted the ${role.title} role!`);
           }
         });
         process.exit();
