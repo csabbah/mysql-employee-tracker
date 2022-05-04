@@ -115,13 +115,19 @@ const promptUpdateRole = () => {
     // Generate the choices to be used in the list prompts below
     // Additionally add a fullData object to test the inputted data with
     var choices = { employees: [], jobs: [], fullData: [] };
+    console.log('focus ont THIS', result);
     result.forEach((employee) => {
       const { first_name, last_name, job_title, role_id, id, department_id } =
         employee;
       choices.employees.push(`${first_name} ${last_name}`);
-      if (!choices.jobs.includes(job_title)) {
-        choices.jobs.push(job_title);
+
+      if (job_title == null) {
+      } else {
+        if (!choices.jobs.includes(job_title)) {
+          choices.jobs.push(job_title);
+        }
       }
+
       choices.fullData.push({
         // Job title, department id and role id will all be updated.
         name: [first_name, last_name],
@@ -132,6 +138,7 @@ const promptUpdateRole = () => {
         id: id,
       });
     });
+
     return inquirer
       .prompt([
         {
@@ -405,23 +412,14 @@ promptOptions().then((selectedOption) => {
   // ---- ---- ---- Delete a row of data from a table depending on the chosen prompt
   if (optionPicked == 'Delete a department') {
     promptDeleteDepartment();
-    // const sql = `DELETE FROM department WHERE id = ?`;
-    // const params = [3]; // Delete the department with ID of 3
-    // handleQuery(sql, params);
   }
 
   if (optionPicked == 'Delete a role') {
     promptDeleteRole();
-    // const sql = `DELETE FROM role WHERE id = ?`;
-    // const params = [3];
-    // handleQuery(sql, params);
   }
 
   if (optionPicked == 'Delete an employee') {
     promptDeleteEmployee();
-    // const sql = `DELETE FROM employee WHERE id = ?`;
-    // const params = [3];
-    // handleQuery(sql, params);
   }
 
   // ------------------------------------------------------------ --- --- --- --- UPDATE DATA

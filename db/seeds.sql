@@ -10,7 +10,7 @@ VALUES
 INSERT INTO role (title, salary, department_id)
 VALUES
   ('Frontend developer', '150000', 1),
-  ('Biologist ', '170000', 4),
+  ('Biologist', '170000', 4),
   ('Doctor', '220000', 2),
   ('Art teacher', '100000', 3),
   ('Backend developer', '90000', 1),
