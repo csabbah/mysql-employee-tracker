@@ -115,7 +115,6 @@ const promptUpdateRole = () => {
     // Generate the choices to be used in the list prompts below
     // Additionally add a fullData object to test the inputted data with
     var choices = { employees: [], jobs: [], fullData: [] };
-    console.log('focus ont THIS', result);
     result.forEach((employee) => {
       const { first_name, last_name, job_title, role_id, id, department_id } =
         employee;
@@ -155,16 +154,40 @@ const promptUpdateRole = () => {
         },
       ])
       .then((data) => {
-        // Take the data we received which is the name of the person to update and the job to switch to
-        console.log('Submitted data', data);
-        // ** ADD CODE *** Using the name of the person, find the ID. Using the chosen job title, find it's related department_id & role_id
-        // ** ADD CODE *** From there, insert into the column using extracted ID the new job_title, role_id and department_id
-        console.log('Full arr', choices.fullData);
-
-        // ** ADD CODE *** Example code
-        // If (fullArr.contains('chosen employee' and 'id') {
-        // insert into (id) with (this data)
-
+        var runOnce = true;
+        var dataToUpdate = {
+          id: '',
+          newRoleId: '',
+          newDepartId: '',
+          newRoleTitle: '',
+        };
+        choices.fullData.forEach((employee) => {
+          const firstName = data.employeeName.split(' ')[0];
+          const secondName = data.employeeName.split(' ')[1];
+          if (employee.name[0] == firstName && employee.name[1] == secondName) {
+            // Extract the index of the chosen employee
+            dataToUpdate.id = employee.id;
+          }
+          // Extract the role id and department id data that pertains to the chosen role
+          if (data.roleToUpdate == employee.job_title) {
+            // Run one time to avoid adding multiple times
+            if (runOnce) {
+              dataToUpdate.newRoleId = employee.roleId;
+              dataToUpdate.newRoleTitle = data.roleToUpdate;
+              dataToUpdate.newDepartId = employee.depart_id;
+              runOnce = false;
+            }
+          }
+        });
+        const { id, newRoleId, newRoleTitle } = dataToUpdate;
+        const sql = `UPDATE employee
+        SET role_id = ${newRoleId}
+        WHERE id = ${id}
+        `;
+        handleQuery(sql, null);
+        console.log(
+          `Successfully switched ${data.employeeName} to the ${newRoleTitle} role!`
+        );
         process.exit();
       });
   });
@@ -215,7 +238,7 @@ const promptDeleteEmployee = () => {
             var sql = `DELETE FROM employee WHERE id = ${employee.id}.`;
             handleQuery(sql, null);
             console.log(
-              `Successfully delted ${employee.name[0]} ${employee.name[1]}`
+              `Successfully deleted ${employee.name[0]} ${employee.name[1]}`
             );
           }
         });

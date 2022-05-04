@@ -8,11 +8,12 @@ const cTable = require('console.table');
 
 module.exports = (sql, params, label) => {
   // If the sql command contains 'DELETE FROM', execute this block of code
-  if (sql.includes('DELETE FROM')) {
+  if (sql.includes('DELETE FROM') || sql.includes('UPDATE')) {
     db.query(sql, function (err, result) {
       if (err) throw err;
     });
   }
+
   if (params) {
     // This functions takes sql commands (and in some cases also includes the params) and then...
     // handles the queries to return the data accordingly
