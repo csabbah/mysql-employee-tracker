@@ -21,7 +21,7 @@ const promptOptions = () => {
         'View all roles', // DONE
         'View all employees', // SEMI-DONE > NEED TO UPDATE SITUATION WITH MANAGERS
         'View employees by manager',
-        'View employees by department',
+        'View employees by department', // DONE
         'Add a department', // DONE
         'Add a role', // DONE
         'Add an employee',
@@ -30,7 +30,7 @@ const promptOptions = () => {
         'Delete an employee', // DONE
         'Update an employee role', // DONE
         'Update an employees manager',
-        'View total utilized budget of a department', // DONE
+        'View total utilized budget of a department',
       ],
     },
   ]);
@@ -464,7 +464,7 @@ const promptEmployeeDepart = () => {
   });
 };
 
-// Execute the prompts and then extract the data...
+// Execute the initial prompt and then extract the data accordingly
 promptOptions().then((selectedOption) => {
   // From here, destructure the object and pull just the string data
   const { optionPicked } = selectedOption;
@@ -477,10 +477,9 @@ promptOptions().then((selectedOption) => {
       const sql = `SELECT * FROM department ORDER BY ${
         data.orderData == 'By ID' ? 'department.id' : 'department.name'
       } ${data.descAsc == 'Ascending order' ? '' : 'DESC'}`;
-      console.log(sql);
       // Add a label parameter so we can label the table before we display it
       // And add 'null' since we are not using the params parameter
-      handleQuery(sql, null, 'Departments');
+      handleQuery(sql, null, 'Departments', data.orderData, data.descAsc);
     });
   }
 
@@ -500,7 +499,7 @@ promptOptions().then((selectedOption) => {
             ? 'role.department_id'
             : ''
         } ${data.descAsc == 'Ascending order' ? '' : 'DESC'}`;
-      handleQuery(sql, null, 'Roles');
+      handleQuery(sql, null, 'Roles', data.orderData, data.descAsc);
     });
   }
 
@@ -525,7 +524,7 @@ promptOptions().then((selectedOption) => {
           : ''
       } ${data.descAsc == 'Ascending order' ? '' : 'DESC'} ;
       `;
-      handleQuery(sql, null, 'Employees');
+      handleQuery(sql, null, 'Employees', data.orderData, data.descAsc);
     });
   }
 

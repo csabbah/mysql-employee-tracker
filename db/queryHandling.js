@@ -6,7 +6,7 @@ db.connect(console.log('Database connected in queryHandling.js'));
 // Import package to illustrate the data through tables
 const cTable = require('console.table');
 
-module.exports = (sql, params, label) => {
+module.exports = (sql, params, label, orderData, descAsc) => {
   // If the sql command contains 'DELETE FROM', execute this block of code
   if (sql.includes('DELETE FROM') || sql.includes('UPDATE')) {
     db.query(sql, function (err, result) {
@@ -26,18 +26,27 @@ module.exports = (sql, params, label) => {
     });
   } else {
     // If params does not exist, that means we're just viewing the data
-    db.query(sql, (err, rows) => {
+    db.query(sql, (orderData, descAsc), (err, rows) => {
       if (err) {
         console.log({ error: err.message });
         return;
       }
       // Generate the table using the data we received
       const table = cTable.getTable(rows);
+      // If data does not exist, inform the user
       if (rows.length < 1) {
         console.log(`\n\n------------ No data exists ------------\n`);
       } else {
-        // Display the table with it's associated label
+        // Else display the table with it's associated label
         console.log(`\n\n------------ ${label.toUpperCase()} ------------\n`);
+        if (
+          orderData == null ||
+          (orderData == undefined && descAsc == null) ||
+          descAsc == undefined
+        ) {
+        } else {
+          console.log(`Sorted by: ${orderData} in ${descAsc}\n`);
+        }
         console.log(table);
       }
       process.exit();

@@ -44,13 +44,5 @@
 -- WHERE department_id = 1
 -- ORDER BY department_id
 
-USE company
-
-SELECT role.*, department.name AS department_name
-      FROM role
-      LEFT JOIN department
-      ON role.department_id = department.id ORDER BY department.id DESC
-
-
 
 -- source db/test.sql
