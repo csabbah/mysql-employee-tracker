@@ -4,6 +4,7 @@ const db = require('../db/connection');
 db.connect(console.log('Database connected in index.js'));
 const inquirer = require('inquirer');
 const handleQuery = require('../db/queryHandling');
+const cTable = require('console.table');
 
 // The executes the initial prompt with the list of options
 const promptOptions = () => {
@@ -17,8 +18,8 @@ const promptOptions = () => {
         // The choices are the values that get pushed into the array 'optionPicked'
         'View all departments', // DONE
         'View all roles', // DONE
-        'View all employees', // SEMI-DONE > NEED TO UPDATE SITUATION WITH MANAGERS
-        'View employees by manager',
+        'View all employees', // DONE
+        'View employees by manager', // DONE
         'View employees by department', // DONE
         'Add a department', // DONE
         'Add a role', // DONE
@@ -359,7 +360,7 @@ const promptAddEmployee = () => {
 };
 
 // ------------------------------------------------------------ --- --- --- --- FOLLOW UP VIEW SPECIFIC DATA PROMPT
-// The below prompt will extract what department the uer wants to view all employees in
+// The below prompt will extract what department and or managers the user wants to view all employees in
 const promptEmployeeDepart = () => {
   const sql = `SELECT * from department`;
   db.query(sql, (err, result) => {
@@ -407,6 +408,63 @@ const promptEmployeeDepart = () => {
               null,
               `All employees from the ${data.departmentName} department`
             );
+          }
+        });
+      });
+  });
+};
+
+const promptEmployeeManager = () => {
+  console.log('test');
+  const sql = `SELECT employee.first_name, employee.last_name, employee.manager_id, employee.id
+  FROM employee
+  WHERE employee.manager_id > 0`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+    var managers = [];
+    result.forEach((manager) => {
+      managers.push(`${manager.first_name} ${manager.last_name}`);
+    });
+    return inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'manager',
+          message: 'Choose the manager to see which employees they manage:',
+          choices: managers,
+        },
+      ])
+      .then((data) => {
+        result.forEach((manager) => {
+          const firstName = data.manager.split(' ')[0];
+          const lastName = data.manager.split(' ')[1];
+
+          if (
+            manager.first_name == firstName &&
+            manager.last_name == lastName
+          ) {
+            const sql = `SELECT A.first_name AS 'first_name', A.last_name, ifnull(B.first_name, 'Manager') as 'manager_name'
+              FROM employee A left outer join employee B
+              ON A.manager_id = B.id
+              WHERE B.id = ${manager.id};
+              `;
+            db.query(sql, (err, rows) => {
+              if (err) {
+                console.log({ error: err.message });
+                return;
+              }
+              const table = cTable.getTable(rows);
+              if (rows.length < 1) {
+                console.log(
+                  `\n\n------------ No employees under this manager ------------\n`
+                );
+              } else {
+                console.log(table);
+              }
+              process.exit();
+            });
           }
         });
       });
@@ -567,6 +625,7 @@ module.exports = {
   promptDeleteRole,
   promptDeleteEmployee,
   promptEmployeeDepart,
+  promptEmployeeManager,
   promptUpdateRole,
   promptAddDepartment,
   promptAddRole,

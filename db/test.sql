@@ -79,10 +79,8 @@ USE company
 -- important, we need this line for this to work:
 -- FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE SET NULL
 
-
 -- From 'SELECT' to 'ON', these lines return the employees manager
 -- At 'WHERE', this returns all employees with the manager id ofo 2
-
 -- Choose employee A's first_name and last_name, and then choose employee B's first_name (label the column as manager_name)
 SELECT A.first_name AS 'first_name', A.last_name, ifnull(B.first_name, 'Manager') as 'manager_name' 
    -- Join the first employee with the 2nd employee on the right
@@ -91,4 +89,8 @@ SELECT A.first_name AS 'first_name', A.last_name, ifnull(B.first_name, 'Manager'
    ON A.manager_id = B.id
    WHERE B.id = 2; -- Choose all employees where the manager has the ID of 2
 
+-- use company
+-- SELECT employee.first_name, employee.manager_id
+-- FROM employee
+-- WHERE employee.manager_id > 0 -- Return all mmanagers by adding a value condition (NULL don't get added)
 -- source db/test.sql

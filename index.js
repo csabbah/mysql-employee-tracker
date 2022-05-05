@@ -13,6 +13,7 @@ const {
   promptDeleteRole,
   promptDeleteDepartment,
   promptEmployeeDepart,
+  promptEmployeeManager,
   promptUpdateRole,
   promptAddDepartment,
   promptAddRole,
@@ -88,6 +89,11 @@ promptOptions().then((selectedOption) => {
   if (optionPicked == 'View employees by department') {
     promptEmployeeDepart();
   }
+
+  if (optionPicked == 'View employees by manager') {
+    promptEmployeeManager();
+  }
+
   // ------------------------------------------------------------ --- --- --- --- ADD DATA
   // ---- ---- ---- Add a row of data into a table depending on the chosen prompt
   if (optionPicked == 'Add a department') {
