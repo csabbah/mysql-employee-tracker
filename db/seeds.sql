@@ -11,11 +11,13 @@ INSERT INTO role (title, salary, department_id)
 VALUES
   ('Frontend developer', '150000', 1),
   ('Biologist', '170000', 4),
-  ('Doctor', '220000', 2),
+  ('Chemical engineer', '215000', 4),
+  ('Family Doctor', '220000', 2),
   ('Art teacher', '100000', 3),
   ('Backend developer', '90000', 1),
   ('Construction worker', '140000', 6),
   ('Nurse', '90000', 2),
+  ('Family lawyer', '60000', 5),
   ('Criminal lawyer', '190000', 5),
   ('Fullstack developer', '250000', 1);
 

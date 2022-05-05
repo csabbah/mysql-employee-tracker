@@ -35,7 +35,7 @@
 -- LEFT OUTER JOIN department ON role.department_id = department.id 
 
 
--- This returns related data from 3 tables and only  returns data where the department id = a certain value
+-- This returns related data from 3 tables and only returns data where the department id = a certain value
 -- -- Depending on the placement in the SELECT, those are the columns that show in order from left to right
 -- SELECT employee.first_name, employee.last_name, role.title AS job_title, role.salary, department.name AS department
 -- FROM employee 
@@ -43,6 +43,21 @@
 -- LEFT OUTER JOIN department ON role.department_id = department.id
 -- WHERE department_id = 1
 -- ORDER BY department_id
+
+
+
+USE company
+
+-- SELECT employee.first_name, employee.last_name, role.title AS job_title, role.salary, department.name AS department
+--             FROM employee
+--             LEFT OUTER JOIN role ON employee.role_id = role.id
+--             LEFT OUTER JOIN department ON role.department_id = department.id
+--             WHERE department_id = 6
+
+SELECT role.salary, department.name AS department_name
+FROM role
+LEFT OUTER JOIN department ON role.department_id = department.id
+
 
 
 -- source db/test.sql

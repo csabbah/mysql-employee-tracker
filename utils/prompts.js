@@ -5,8 +5,6 @@ db.connect(console.log('Database connected in index.js'));
 const inquirer = require('inquirer');
 const handleQuery = require('../db/queryHandling');
 
-var queryData = (sql) => {};
-
 // The executes the initial prompt with the list of options
 const promptOptions = () => {
   return inquirer.prompt([
@@ -424,6 +422,60 @@ const promptUpdateRole = () => {
   });
 };
 
+// ------------------------------------------------------------ --- --- --- --- FOLLOW UP VIEW FULL BUDGET PROMPTS
+// The below prompt will extract which department the user would like to see the full budget from
+const promptViewBudget = () => {
+  const sql = `SELECT * from department`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+
+    var choices = [];
+    result.forEach((department) => {
+      const { id, name } = department;
+      if (!choices.includes(name)) {
+        choices.push(name);
+      }
+    });
+    return inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'departmentName',
+          message:
+            'Which Department would you like to view total utilized budget?',
+          choices: choices,
+        },
+      ])
+      .then((data) => {
+        // This block of code will take the choice that was picked and compare it with the full data
+        // Once it finds the chosen department, it extracts the ID and initiated the SQL delete command
+        const sql = `
+            SELECT role.salary, department.name AS department_name
+            FROM role
+            LEFT OUTER JOIN department ON role.department_id = department.id`;
+
+        db.query(sql, (err, result) => {
+          if (err) {
+            console.log(err);
+          }
+          var value = 0;
+          result.forEach((item) => {
+            if (item.department_name == data.departmentName) {
+              var newVal = parseInt(item.salary);
+              value += newVal;
+            }
+          });
+          console.log(
+            `Total utilized budget in the ${data.departmentName} department: $${value}`
+          );
+          process.exit();
+        });
+      });
+  });
+};
+
 module.exports = {
   promptDeleteDepartment,
   promptDeleteRole,
@@ -434,4 +486,5 @@ module.exports = {
   promptAddRole,
   promptOrderData,
   promptOptions,
+  promptViewBudget,
 };

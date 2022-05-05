@@ -17,6 +17,7 @@ const {
   promptAddDepartment,
   promptAddRole,
   promptOrderData,
+  promptViewBudget,
 } = require('./utils/prompts');
 
 // Execute the initial prompt and then extract the data accordingly
@@ -169,5 +170,6 @@ promptOptions().then((selectedOption) => {
   // ------------------------------------------------------------ --- --- --- --- RETRIEVE DATA
   // ---- ---- ---- Returns a sum of an entire column of data
   if (optionPicked == 'View total utilized budget of a department') {
+    promptViewBudget();
   }
 });
