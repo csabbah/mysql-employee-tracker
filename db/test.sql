@@ -28,7 +28,6 @@
        
 
 
--- USE company
 -- -- Depending on the placement in the SELECT, those are the columns that show in order from left to rightt
 -- SELECT employee.first_name, employee.last_name, role.title AS job_title, department.name AS department_name, role.salary, department.id AS department_id
 -- FROM employee 
@@ -44,6 +43,14 @@
 -- LEFT OUTER JOIN department ON role.department_id = department.id
 -- WHERE department_id = 1
 -- ORDER BY department_id
+
+USE company
+
+SELECT role.*, department.name AS department_name
+      FROM role
+      LEFT JOIN department
+      ON role.department_id = department.id ORDER BY department.id DESC
+
 
 
 -- source db/test.sql

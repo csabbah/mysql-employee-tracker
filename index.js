@@ -36,8 +36,28 @@ const promptOptions = () => {
   ]);
 };
 
+// ------------------------------------------------------------ --- --- --- --- FOLLOW UP SORT DATA PROMPTS
+const promptOrderData = (data) => {
+  // Depending on the parameter that is passed, execute specific prompts
+  if (data == 'roles') {
+    return inquirer.prompt([
+      {
+        type: 'list',
+        name: 'orderData',
+        message: `How would you like to sort your ${data} data?`,
+        choices: ['By ID', 'By job title', 'By salary', 'By department'],
+      },
+      {
+        type: 'list',
+        name: 'descAsc',
+        message: `How would you like to sort by:`,
+        choices: ['Ascending order', 'Descending order'],
+      },
+    ]);
+  }
+};
+
 // ------------------------------------------------------------ --- --- --- --- FOLLOW UP ADD DATA PROMPTS
-// This executes the prompts to add a new department
 const promptAddDepartment = () => {
   return inquirer.prompt([
     {
@@ -416,13 +436,23 @@ promptOptions().then((selectedOption) => {
   }
 
   if (optionPicked == 'View all roles') {
-    const sql = `SELECT role.*, department.name AS department_name
-    FROM role
-    LEFT JOIN department
-    ON role.department_id = department.id;
-    `;
-
-    handleQuery(sql, null, 'Roles');
+    promptOrderData('roles').then((data) => {
+      const sql = `SELECT role.*, department.name AS department_name
+        FROM role
+        LEFT JOIN department
+        ON role.department_id = department.id ORDER BY ${
+          data.orderData == 'By ID'
+            ? 'role.id'
+            : data.orderData == 'By job title'
+            ? 'role.title'
+            : data.orderData == 'By salary'
+            ? 'role.salary'
+            : data.orderData == 'By department'
+            ? 'role.department_id'
+            : ''
+        } ${data.descAsc == 'Ascending order' ? '' : 'DESC'}`;
+      handleQuery(sql, null, 'Roles');
+    });
   }
 
   if (optionPicked == 'View all employees') {
