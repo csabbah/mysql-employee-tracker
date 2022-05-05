@@ -19,7 +19,8 @@ CREATE TABLE employee (
   id INTEGER AUTO_INCREMENT PRIMARY KEY, -- employee id
   first_name VARCHAR(30) NOT NULL, -- employee first name
   last_name VARCHAR(30) NOT NULL, -- employee last name
-  role_id INTEGER, -- references emeployee role 
+  role_id INTEGER, -- references employee role 
   manager_id INTEGER NULL, -- references the manager associated with employee 
-  CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE SET NULL
+  FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE SET NULL,
+  FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE SET NULL
 );

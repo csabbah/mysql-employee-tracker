@@ -22,13 +22,13 @@ const promptOptions = () => {
         'View employees by department', // DONE
         'Add a department', // DONE
         'Add a role', // DONE
-        'Add an employee',
+        'Add an employee', // DONE
         'Delete a department', // DONE
         'Delete a role', // DONE
         'Delete an employee', // DONE
         'Update an employee role', // DONE
         'Update an employees manager',
-        'View total utilized budget of a department',
+        'View total utilized budget of a department', // DONE
       ],
     },
   ]);
@@ -272,6 +272,92 @@ const promptAddRole = () => {
   ]);
 };
 
+const promptAddEmployee = () => {
+  const sql = `SELECT employee.id, employee.first_name, employee.last_name, employee.manager_id, employee.role_id, role.title AS job_title, role.department_id, department.name AS department_name, role.salary
+      FROM employee
+      LEFT OUTER JOIN role ON employee.role_id = role.id
+      LEFT OUTER JOIN department ON role.department_id = department.id`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+
+    var availableRoles = [];
+    var largestId = 0;
+    result.forEach((data) => {
+      if (!availableRoles.includes(data.job_title)) {
+        availableRoles.push(data.job_title);
+      }
+      if (largestId < data.id) {
+        largestId = data.id;
+      }
+    });
+
+    return inquirer
+      .prompt([
+        {
+          type: 'input',
+          name: 'firstName',
+          message: 'Provide the employees first name (Required)',
+          validate: (firstName) => {
+            if (firstName) {
+              return true;
+            } else {
+              console.log('You need to enter an employee name!');
+              return false;
+            }
+          },
+        },
+        {
+          type: 'input',
+          name: 'lastName',
+          message: 'Provide the employees last name (Required)',
+          validate: (LastName) => {
+            if (LastName) {
+              return true;
+            } else {
+              console.log('You need to enter an employee name!');
+              return false;
+            }
+          },
+        },
+        {
+          type: 'list',
+          name: 'employeeRole',
+          message:
+            'Please choose the employees role (from the available positions) (Required)',
+          choices: availableRoles,
+        },
+        {
+          type: 'input',
+          name: 'managerId',
+          message: `Please provide a manager id (less than ${largestId}) or enter "NULL" to assign employee as a manager (Required)`,
+          validate: (managerId) => {
+            if (managerId) {
+              return true;
+            } else {
+              console.log('You need to enter a manager ID or assign "NULL"');
+              return false;
+            }
+          },
+        },
+      ])
+      .then((data) => {
+        const { firstName, lastName, employeeRole, managerId } = data;
+        result.forEach((job) => {
+          if (employeeRole == job.job_title) {
+            const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                      VALUES (?,?,?,?)`;
+            const params = [firstName, lastName, job.role_id, managerId];
+            handleQuery(sql, params);
+            console.log(`Added ${firstName} ${lastName} to the database!`);
+            process.exit(); // Terminate command line after returning data
+          }
+        });
+      });
+  });
+};
+
 // ------------------------------------------------------------ --- --- --- --- FOLLOW UP VIEW SPECIFIC DATA PROMPT
 // The below prompt will extract what department the uer wants to view all employees in
 const promptEmployeeDepart = () => {
@@ -484,6 +570,7 @@ module.exports = {
   promptUpdateRole,
   promptAddDepartment,
   promptAddRole,
+  promptAddEmployee,
   promptOrderData,
   promptOptions,
   promptViewBudget,

@@ -54,10 +54,41 @@ USE company
 --             LEFT OUTER JOIN department ON role.department_id = department.id
 --             WHERE department_id = 6
 
-SELECT role.salary, department.name AS department_name
-FROM role
-LEFT OUTER JOIN department ON role.department_id = department.id
+-- SELECT role.salary, department.name AS department_name
+-- FROM role
+-- LEFT OUTER JOIN department ON role.department_id = department.id
 
 
+-- SELECT employee.first_name, employee.last_name, employee.first_name AS manager_name
+-- FROM employee 
+-- WHERE employee.id = employee.manager_id;
+
+
+-- UPDATE employee SET employee.manager_id = 4 WHERE employee.id = 2;
+-- SELECT * from employee;
+
+
+
+
+
+
+
+-- IMPORTANT NOTE BEFORE THE COMMAND
+-- Employee's id = manager_id value (for example, if an employee has a manager_id of 1, that means the employee with an index of 1 is the manager)
+-- If an employee has a NULL value, it means they are managers 
+-- important, we need this line for this to work:
+-- FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE SET NULL
+
+
+-- From 'SELECT' to 'ON', these lines return the employees manager
+-- At 'WHERE', this returns all employees with the manager id ofo 2
+
+-- Choose employee A's first_name and last_name, and then choose employee B's first_name (label the column as manager_name)
+SELECT A.first_name AS 'first_name', A.last_name, ifnull(B.first_name, 'Manager') as 'manager_name' 
+   -- Join the first employee with the 2nd employee on the right
+   FROM employee A left outer join employee B 
+   -- If the first employees manager_id == the second employees.id, that means that B employee is their manager
+   ON A.manager_id = B.id
+   WHERE B.id = 2; -- Choose all employees where the manager has the ID of 2
 
 -- source db/test.sql

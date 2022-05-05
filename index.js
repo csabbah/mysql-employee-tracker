@@ -16,6 +16,7 @@ const {
   promptUpdateRole,
   promptAddDepartment,
   promptAddRole,
+  promptAddEmployee,
   promptOrderData,
   promptViewBudget,
 } = require('./utils/prompts');
@@ -134,12 +135,7 @@ promptOptions().then((selectedOption) => {
   }
 
   if (optionPicked == 'Add an employee') {
-    const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) 
-              VALUES (?,?,?,?)`;
-    const params = ['Carlos', 'Sabbah', 2, 1];
-    handleQuery(sql, params);
-    console.log(`Added Carlos to the database!`);
-    // process.exit(); // Terminate command line after returning data
+    promptAddEmployee();
   }
   // ------------------------------------------------------------ --- --- --- --- DELETE DATA
   // ---- ---- ---- Delete a row of data from a table depending on the chosen prompt
