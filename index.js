@@ -37,6 +37,7 @@ const promptOptions = () => {
 };
 
 // ------------------------------------------------------------ --- --- --- --- FOLLOW UP SORT DATA PROMPTS
+// The below prompt will extract how the user wants to order the data they are viewing
 const promptOrderData = (data) => {
   // Depending on the parameter that is passed, execute specific prompts
   if (data == 'roles') {
@@ -78,9 +79,26 @@ const promptOrderData = (data) => {
       },
     ]);
   }
+  if (data == 'departments') {
+    return inquirer.prompt([
+      {
+        type: 'list',
+        name: 'orderData',
+        message: `How would you like to sort your ${data} data?`,
+        choices: ['By ID', 'Department Name'],
+      },
+      {
+        type: 'list',
+        name: 'descAsc',
+        message: `How would you like to sort by:`,
+        choices: ['Ascending order', 'Descending order'],
+      },
+    ]);
+  }
 };
 
 // ------------------------------------------------------------ --- --- --- --- FOLLOW UP ADD DATA PROMPTS
+// The below prompts will extract what the user wants to add to the database
 const promptAddDepartment = () => {
   return inquirer.prompt([
     {
@@ -144,6 +162,7 @@ const promptAddRole = () => {
 };
 
 // ------------------------------------------------------------ --- --- --- --- FOLLOW UP UPDATE DATA PROMPTS
+// The below prompt will extract first which employee the user wants to update followed by which role to update the employee with
 const promptUpdateRole = () => {
   const sql = `SELECT employee.*, role.title AS job_title, role.salary, department.name AS department_name, role.department_id
     FROM employee 
@@ -237,6 +256,7 @@ const promptUpdateRole = () => {
 };
 
 // ------------------------------------------------------------ --- --- --- --- FOLLOW UP DELETE DATA PROMPTS
+// The below prompt will extract what row the user would like to delete
 const promptDeleteEmployee = () => {
   const sql = `SELECT employee.*, role.title AS job_title, role.salary, department.name AS department_name, role.department_id
     FROM employee 
@@ -388,6 +408,7 @@ const promptDeleteDepartment = () => {
 };
 
 // ------------------------------------------------------------ --- --- --- --- FOLLOW UP VIEW SPECIFIC DATA PROMPT
+// The below prompt will extract what department the uer wants to view all employees in
 const promptEmployeeDepart = () => {
   // *** ADD CODE *** When you create the universal function for the below query, add a variable in the function
   // FOr example i.e. sql = 'SELECT * from ${variable-name}` - Universal function should be called, 'returnListChoices(label)'
@@ -452,10 +473,15 @@ promptOptions().then((selectedOption) => {
   // ------------------------------------------------------------ --- --- --- --- VIEW DATA
   // ---- ---- ---- View all rows from a table depending on the chosen prompt
   if (optionPicked == 'View all departments') {
-    const sql = `SELECT * FROM department`;
-    // Add a label parameter so we can label the table before we display it
-    // And add 'null' since we are not using the params parameter
-    handleQuery(sql, null, 'Departments');
+    promptOrderData('departments').then((data) => {
+      const sql = `SELECT * FROM department ORDER BY ${
+        data.orderData == 'By ID' ? 'department.id' : 'department.name'
+      } ${data.descAsc == 'Ascending order' ? '' : 'DESC'}`;
+      console.log(sql);
+      // Add a label parameter so we can label the table before we display it
+      // And add 'null' since we are not using the params parameter
+      handleQuery(sql, null, 'Departments');
+    });
   }
 
   if (optionPicked == 'View all roles') {
@@ -480,7 +506,6 @@ promptOptions().then((selectedOption) => {
 
   if (optionPicked == 'View all employees') {
     promptOrderData('employees').then((data) => {
-      console.log(data);
       const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title AS job_title, department.name AS department_name, role.salary
       FROM employee
       LEFT OUTER JOIN role ON employee.role_id = role.id
