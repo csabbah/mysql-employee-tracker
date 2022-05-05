@@ -15,7 +15,7 @@
 
 ## Description
 
-This application...
+This node application allows users to perform CRUD operations on a dedicated MySQL (Sqlite3) database. Users can add, delete, update and view specific pieces of data. Depending on chain of commands, users can also sort the data they are viewing by specific values, view data by departments and or managers, view the total utilization of budget per department and so on. Everything runs on the command line using the Node.js inquirer modules and many complex sets fo conditionals ensure the best possible results.
 
 ## Installation
 
@@ -66,5 +66,3 @@ If you have questions about this application or general inquiry, please reach ou
 ## License
 
 This project is covered under the MIT License.
-
-![Preview](https://user-images.githubusercontent.com/91699101/166082658-da8944c3-9d71-43f6-988f-f2471e8866de.png)
