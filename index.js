@@ -55,6 +55,29 @@ const promptOrderData = (data) => {
       },
     ]);
   }
+  if (data == 'employees') {
+    return inquirer.prompt([
+      {
+        type: 'list',
+        name: 'orderData',
+        message: `How would you like to sort your ${data} data?`,
+        choices: [
+          'By ID',
+          'By First name',
+          'By Last name',
+          'By job title',
+          'By department',
+          'By salary',
+        ],
+      },
+      {
+        type: 'list',
+        name: 'descAsc',
+        message: `How would you like to sort by:`,
+        choices: ['Ascending order', 'Descending order'],
+      },
+    ]);
+  }
 };
 
 // ------------------------------------------------------------ --- --- --- --- FOLLOW UP ADD DATA PROMPTS
@@ -456,13 +479,29 @@ promptOptions().then((selectedOption) => {
   }
 
   if (optionPicked == 'View all employees') {
-    const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title AS job_title, department.name AS department_name, role.salary
-    FROM employee 
-    LEFT OUTER JOIN role ON employee.role_id = role.id
-    LEFT OUTER JOIN department ON role.department_id = department.id ORDER BY employee.role_id;
-    `;
-    // const sql = `SELECT * FROM employee, role.id; FROM employee; LEFT JOIN role ON employee.role_id = role.id;`;
-    handleQuery(sql, null, 'Employees');
+    promptOrderData('employees').then((data) => {
+      console.log(data);
+      const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title AS job_title, department.name AS department_name, role.salary
+      FROM employee
+      LEFT OUTER JOIN role ON employee.role_id = role.id
+      LEFT OUTER JOIN department ON role.department_id = department.id ORDER BY ${
+        data.orderData == 'By ID'
+          ? 'employee.id'
+          : data.orderData == 'By First name'
+          ? 'employee.first_name'
+          : data.orderData == 'By Last name'
+          ? 'employee.last_name'
+          : data.orderData == 'By job title'
+          ? 'employee.role_id'
+          : data.orderData == 'By department'
+          ? 'role.department_id'
+          : data.orderData == 'By salary'
+          ? 'role.salary'
+          : ''
+      } ${data.descAsc == 'Ascending order' ? '' : 'DESC'} ;
+      `;
+      handleQuery(sql, null, 'Employees');
+    });
   }
 
   if (optionPicked == 'View employees by department') {
