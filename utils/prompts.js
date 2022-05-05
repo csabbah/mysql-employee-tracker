@@ -16,20 +16,20 @@ const promptOptions = () => {
       message: 'What would you like to do?', // The prompt question
       choices: [
         // The choices are the values that get pushed into the array 'optionPicked'
-        'View all departments', // DONE
-        'View all roles', // DONE
-        'View all employees', // DONE
-        'View employees by manager', // DONE
-        'View employees by department', // DONE
-        'Add a department', // DONE
-        'Add a role', // DONE
-        'Add an employee', // DONE
-        'Delete a department', // DONE
-        'Delete a role', // DONE
-        'Delete an employee', // DONE
-        'Update an employee role', // DONE
+        'View all departments',
+        'View all roles',
+        'View all employees',
+        'View employees by manager',
+        'View employees by department',
+        'Add a department',
+        'Add a role',
+        'Add an employee',
+        'Delete a department',
+        'Delete a role',
+        'Delete an employee',
+        'Update an employee role',
         'Update an employees manager',
-        'View total utilized budget of a department', // DONE
+        'View total utilized budget of a department',
       ],
     },
   ]);
@@ -415,7 +415,6 @@ const promptEmployeeDepart = () => {
 };
 
 const promptEmployeeManager = () => {
-  console.log('test');
   const sql = `SELECT employee.first_name, employee.last_name, employee.manager_id, employee.id
   FROM employee
   WHERE employee.manager_id > 0`;
@@ -566,6 +565,94 @@ const promptUpdateRole = () => {
   });
 };
 
+const promptUpdateManager = () => {
+  const sql = `SELECT employee.*, role.title AS job_title, role.salary, department.name AS department_name, role.department_id
+    FROM employee 
+    LEFT OUTER JOIN role ON employee.role_id = role.id
+    LEFT OUTER JOIN department ON role.department_id = department.id ORDER BY employee.role_id;
+    `;
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+    // Generate the choices to be used in the list prompts below
+    // Additionally add a fullData object to test the inputted data with
+    var choices = { employees: [], managers: [] };
+    result.forEach((employee) => {
+      // ONLY push non manager employees
+      if (employee.manager_id != null) {
+        const { first_name, last_name } = employee;
+        choices.employees.push(`${first_name} ${last_name}`);
+      }
+    });
+    result.forEach((manager) => {
+      // Only push managers
+      if (manager.manager_id == null) {
+        const { first_name, last_name } = manager;
+        choices.managers.push(`${first_name} ${last_name}`);
+      }
+    });
+
+    return inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'employeeName',
+          message: 'Which employee would you like to do update? (Required)',
+          choices: choices.employees,
+        },
+        {
+          type: 'list',
+          name: 'newManager',
+          message: 'Which enter a new manager to assign: (Required)',
+          choices: choices.managers,
+        },
+      ])
+      .then((data) => {
+        var dataToUpdate = {
+          employeeId: '',
+          newManagerid: '',
+          chosenManager: '',
+          chosenEmployee: '',
+        };
+        result.forEach((activeData) => {
+          const chosenEmployee = data.employeeName;
+          dataToUpdate.chosenEmployee = data.employeeName;
+          const firstName = chosenEmployee.split(' ')[0];
+          const lastName = chosenEmployee.split(' ')[1];
+
+          const newManager = data.newManager;
+          dataToUpdate.chosenManager = data.newManager;
+          const managerFirstName = newManager.split(' ')[0];
+          const managerLastName = newManager.split(' ')[1];
+
+          if (
+            firstName == activeData.first_name &&
+            lastName == activeData.last_name
+          ) {
+            dataToUpdate.employeeId = activeData.id;
+          }
+
+          if (
+            managerFirstName == activeData.first_name &&
+            managerLastName == activeData.last_name
+          ) {
+            dataToUpdate.newManagerid = activeData.id;
+          }
+        });
+
+        const sql = `UPDATE employee
+        SET manager_id = ${dataToUpdate.newManagerid}
+        WHERE employee.id = ${dataToUpdate.employeeId}
+        `;
+        handleQuery(sql, null);
+        console.log(
+          `Successfully updated ${dataToUpdate.chosenEmployee} to be managed by ${dataToUpdate.chosenManager}!`
+        );
+        process.exit();
+      });
+  });
+};
 // ------------------------------------------------------------ --- --- --- --- FOLLOW UP VIEW FULL BUDGET PROMPTS
 // The below prompt will extract which department the user would like to see the full budget from
 const promptViewBudget = () => {
@@ -627,6 +714,7 @@ module.exports = {
   promptEmployeeDepart,
   promptEmployeeManager,
   promptUpdateRole,
+  promptUpdateManager,
   promptAddDepartment,
   promptAddRole,
   promptAddEmployee,

@@ -1,5 +1,3 @@
-// Import the required modules
-const inquirer = require('inquirer');
 // Import the function that handles the SQL commands
 const handleQuery = require('./db/queryHandling');
 // Import the data base connection boiler plate
@@ -15,6 +13,7 @@ const {
   promptEmployeeDepart,
   promptEmployeeManager,
   promptUpdateRole,
+  promptUpdateManager,
   promptAddDepartment,
   promptAddRole,
   promptAddEmployee,
@@ -167,6 +166,7 @@ promptOptions().then((selectedOption) => {
   }
 
   if (optionPicked == 'Update an employees manager') {
+    promptUpdateManager();
   }
 
   // ------------------------------------------------------------ --- --- --- --- RETRIEVE DATA
