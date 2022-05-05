@@ -45,7 +45,7 @@ module.exports = (sql, params, label, orderData, descAsc) => {
           descAsc == undefined
         ) {
         } else {
-          console.log(`Sorted by: ${orderData} in ${descAsc}\n`);
+          console.log(`Sorted ${orderData} in ${descAsc}\n`);
         }
         console.log(table);
       }
