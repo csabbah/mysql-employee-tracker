@@ -109,7 +109,7 @@ const promptDeleteEmployee = () => {
             var sql = `DELETE FROM employee WHERE id = ${employee.id}.`;
             handleQuery(sql, null);
             console.log(
-              `Successfully deleted ${employee.name[0]} ${employee.name[1]}`
+              `\nSuccessfully deleted ${employee.name[0]} ${employee.name[1]}\n`
             );
           }
         });
@@ -154,7 +154,7 @@ const promptDeleteRole = () => {
           if (data.roleName == role.title) {
             var sql = `DELETE FROM role WHERE id = ${role.id}.`;
             handleQuery(sql, null);
-            console.log(`Successfully deleted the ${role.title} role!`);
+            console.log(`\nSuccessfully deleted the ${role.title} role!\n`);
           }
         });
         process.exit();
@@ -200,7 +200,7 @@ const promptDeleteDepartment = () => {
             var sql = `DELETE FROM department WHERE id = ${department.id}.`;
             handleQuery(sql, null);
             console.log(
-              `Successfully deleted ${department.depart_name} and all associated roles!`
+              `\nSuccessfully deleted ${department.depart_name} and all associated roles!\n`
             );
           }
         });
@@ -649,7 +649,7 @@ const promptUpdateManager = () => {
         `;
         handleQuery(sql, null);
         console.log(
-          `Successfully updated ${dataToUpdate.chosenEmployee} to be managed by ${dataToUpdate.chosenManager}!`
+          `\nSuccessfully updated ${dataToUpdate.chosenEmployee} to be managed by ${dataToUpdate.chosenManager}!\n`
         );
         process.exit();
       });
