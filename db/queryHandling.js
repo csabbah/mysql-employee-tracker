@@ -1,7 +1,7 @@
 // Import the data base connection boiler plate
 const db = require('./connection');
 // Connect the database and display a log of it
-db.connect(console.log('Database connected in queryHandling.js'));
+db.connect(console.log('\nDatabase connected in queryHandling.js'));
 
 // Import package to illustrate the data through tables
 const cTable = require('console.table');

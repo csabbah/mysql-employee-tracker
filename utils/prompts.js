@@ -1,7 +1,7 @@
 // All the follow up prompts
 
 const db = require('../db/connection');
-db.connect(console.log('Database connected in index.js'));
+db.connect(console.log('Database connected in prompts.js\n\n'));
 const inquirer = require('inquirer');
 const handleQuery = require('../db/queryHandling');
 const cTable = require('console.table');
@@ -417,14 +417,16 @@ const promptEmployeeDepart = () => {
 const promptEmployeeManager = () => {
   const sql = `SELECT employee.first_name, employee.last_name, employee.manager_id, employee.id
   FROM employee
-  WHERE employee.manager_id > 0`;
+  `;
   db.query(sql, (err, result) => {
     if (err) {
       console.log(err);
     }
     var managers = [];
     result.forEach((manager) => {
-      managers.push(`${manager.first_name} ${manager.last_name}`);
+      if (manager.manager_id == null) {
+        managers.push(`${manager.first_name} ${manager.last_name}`);
+      }
     });
     return inquirer
       .prompt([
