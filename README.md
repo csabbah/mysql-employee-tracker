@@ -44,7 +44,7 @@ From there, you can choose how you want to view, retrieve, delete and edit the S
 ## Links
 
 Link to the video of execution:
-[View here](https://google.com)
+[View here](https://drive.google.com/file/d/1QIFqJB5-SrDG8KaIRtjf5DoF1jFQz44L/view?usp=sharing)
 
 ## Built With
 
