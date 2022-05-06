@@ -22,7 +22,6 @@ module.exports = (sql, params, label, orderData, descAsc) => {
       if (err) {
         console.log(err);
       }
-      console.log(result); // Return the appropriate result
     });
   } else {
     // If params does not exist, that means we're just viewing the data

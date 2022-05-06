@@ -274,10 +274,9 @@ const promptAddRole = () => {
 };
 
 const promptAddEmployee = () => {
-  const sql = `SELECT employee.id, employee.first_name, employee.last_name, employee.manager_id, employee.role_id, role.title AS job_title, role.department_id, department.name AS department_name, role.salary
-      FROM employee
-      LEFT OUTER JOIN role ON employee.role_id = role.id
-      LEFT OUTER JOIN department ON role.department_id = department.id`;
+  const sql = `SELECT role.title, role.id, employee.manager_id, employee.role_id
+      FROM role
+      LEFT OUTER JOIN employee ON employee.role_id = role.id`;
   db.query(sql, (err, result) => {
     if (err) {
       console.log(err);
@@ -286,11 +285,11 @@ const promptAddEmployee = () => {
     var availableRoles = [];
     var largestId = 0;
     result.forEach((data) => {
-      if (!availableRoles.includes(data.job_title)) {
-        availableRoles.push(data.job_title);
+      if (!availableRoles.includes(data.title)) {
+        availableRoles.push(data.title);
       }
-      if (largestId < data.id) {
-        largestId = data.id;
+      if (largestId < data.manager_id) {
+        largestId = data.manager_id;
       }
     });
 
@@ -332,7 +331,7 @@ const promptAddEmployee = () => {
         {
           type: 'input',
           name: 'managerId',
-          message: `Please provide a manager id (less than ${largestId}) or enter "NULL" to assign employee as a manager (Required)`,
+          message: `Please provide a manager id (less than or equal to ${largestId}) or enter "NULL" to assign employee as a manager (Required)`,
           validate: (managerId) => {
             if (managerId) {
               return true;
@@ -346,12 +345,12 @@ const promptAddEmployee = () => {
       .then((data) => {
         const { firstName, lastName, employeeRole, managerId } = data;
         result.forEach((job) => {
-          if (employeeRole == job.job_title) {
+          if (employeeRole == job.title) {
             const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
                       VALUES (?,?,?,?)`;
-            const params = [firstName, lastName, job.role_id, managerId];
+            const params = [firstName, lastName, job.id, managerId];
             handleQuery(sql, params);
-            console.log(`Added ${firstName} ${lastName} to the database!`);
+            console.log(`\nAdded ${firstName} ${lastName} to the database!\n`);
             process.exit(); // Terminate command line after returning data
           }
         });
@@ -561,7 +560,7 @@ const promptUpdateRole = () => {
         `;
         handleQuery(sql, null);
         console.log(
-          `Successfully switched ${data.employeeName} to the ${newRoleTitle} role!`
+          `\nSuccessfully switched ${data.employeeName} to the ${newRoleTitle} role!\n`
         );
         process.exit();
       });

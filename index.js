@@ -103,7 +103,7 @@ promptOptions().then((selectedOption) => {
                 VALUES (?)`;
       const params = [data.departmentName]; // And add this newly extracted department as the param
       handleQuery(sql, params);
-      console.log(`Added ${data.departmentName} to the database!`);
+      console.log(`\nAdded ${data.departmentName} to the database!\n`);
       process.exit(); // Terminate command line after returning dat
     });
   }
@@ -132,7 +132,7 @@ promptOptions().then((selectedOption) => {
         // Again, data is the object that contains the submitted data via command line prompts
         const params = [data.roleName, salary, latestId];
         handleQuery(sql, params);
-        console.log(`Added ${data.roleName} to the database!`);
+        console.log(`\nAdded ${data.roleName} to the database!\n`);
         // Exit the command line from here
         process.exit();
       });
