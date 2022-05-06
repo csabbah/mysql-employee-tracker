@@ -403,6 +403,7 @@ const promptEmployeeDepart = () => {
             LEFT OUTER JOIN department ON role.department_id = department.id
             WHERE department_id = ${department.id}
             ORDER BY department_id;`;
+
             handleQuery(
               sql,
               null,

@@ -34,7 +34,7 @@ module.exports = (sql, params, label, orderData, descAsc) => {
       // Generate the table using the data we received
       const table = cTable.getTable(rows);
       // If data does not exist, inform the user
-      if (rows.length < 1) {
+      if (rows.length == 0) {
         console.log(`\n\n------------ No data exists ------------\n`);
       } else {
         // Else display the table with it's associated label
