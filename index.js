@@ -3,7 +3,11 @@ const handleQuery = require('./db/queryHandling');
 // Import the data base connection boiler plate
 const db = require('./db/connection');
 // Connect the database and display a log of it
-db.connect(console.log('Database connected in index.js'));
+try {
+  db.connect(console.log('Database connected in index.js'));
+} catch (error) {
+  console.log(errr);
+}
 // Import all prompts (initial and follow up prompts)
 const {
   promptOptions,

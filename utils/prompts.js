@@ -1,7 +1,11 @@
 // All the follow up prompts
 
 const db = require('../db/connection');
-db.connect(console.log('Database connected in prompts.js\n\n'));
+try {
+  db.connect(console.log('Database connected in prompts.js\n\n'));
+} catch (error) {
+  console.log(errr);
+}
 const inquirer = require('inquirer');
 const handleQuery = require('../db/queryHandling');
 const cTable = require('console.table');
