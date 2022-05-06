@@ -335,12 +335,21 @@ const promptAddEmployee = () => {
         {
           type: 'input',
           name: 'managerId',
-          message: `Please provide a manager id (less than or equal to ${largestId}) or enter "NULL" to assign employee as a manager (Required)`,
+          message: `Enter a manager id greater 0 and less than/equal to ${largestId}) OR enter "NULL" to assign as manager (Required)`,
           validate: (managerId) => {
-            if (managerId) {
+            if (
+              (managerId > 0 && managerId <= largestId) ||
+              managerId == 'NULL'
+            ) {
               return true;
             } else {
-              console.log('You need to enter a manager ID or assign "NULL"');
+              if (managerId > 0 || managerId <= largestId) {
+                console.log(
+                  `You need to enter a valid manager ID above 0 and less than or equal to ${largestId})!`
+                );
+              } else {
+                console.log(`You need to enter "NULL" in all caps`);
+              }
               return false;
             }
           },
