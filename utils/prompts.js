@@ -714,7 +714,7 @@ const promptViewBudget = () => {
             }
           });
           console.log(
-            `Total utilized budget in the ${data.departmentName} department: $${value}`
+            `\nTotal utilized budget in the ${data.departmentName} department: $${value}\n`
           );
           process.exit();
         });
