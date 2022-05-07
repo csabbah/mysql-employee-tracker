@@ -73,45 +73,42 @@ const promptOrderData = (data) => {
 
 // ------------------------------------------------------------ --- --- --- --- FOLLOW UP DELETE DATA PROMPTS
 // The below prompt will extract what row the user would like to delete
-const promptDeleteEmployee = () => {
-  const sql = `SELECT employee.*, role.title AS job_title, role.salary, department.name AS department_name, role.department_id
-    FROM employee 
-    LEFT OUTER JOIN role ON employee.role_id = role.id
-    LEFT OUTER JOIN department ON role.department_id = department.id ORDER BY employee.role_id;
-    `;
+const promptDeleteDepartment = () => {
+  const sql = `SELECT * from department
+  `;
   db.query(sql, (err, result) => {
     if (err) {
       console.log(err);
     }
+
     var choices = [];
-    result.forEach((employee) => {
-      const { first_name, last_name } = employee;
-      choices.push(`${first_name} ${last_name}`);
+    result.forEach((department) => {
+      const { name } = department;
+      // Only push unique departments
+      if (!choices.includes(name)) {
+        choices.push(name);
+      }
       choices.sort();
     });
     return inquirer
       .prompt([
         {
           type: 'list',
-          name: 'employeeName',
-          message: 'Which Employee would you like to delete?',
+          name: 'departmentName',
+          message: 'Which Department would you like to delete?',
           choices: choices,
         },
       ])
       .then((data) => {
-        // This block of code will take the choice that was picked and compare it with the results data
-        result.forEach((employee) => {
-          const firstName = data.employeeName.split(' ')[0];
-          const lastName = data.employeeName.split(' ')[1];
-
-          // Once it finds the chosen role, it extracts the ID and initiated the SQL delete command
-          if (
-            firstName == employee.first_name &&
-            lastName == employee.last_name
-          ) {
-            var sql = `DELETE FROM employee WHERE id = ${employee.id}.`;
+        // This block of code will take the choice that was picked and compare it with the full data
+        result.forEach((department) => {
+          // Once it finds the chosen department, it extracts the ID and initiated the SQL delete command
+          if (data.departmentName == department.name) {
+            var sql = `DELETE FROM department WHERE id = ${department.id}.`;
             handleQuery(sql, null);
-            console.log(`\nSuccessfully deleted ${firstName} ${lastName}\n`);
+            console.log(
+              `\nSuccessfully deleted ${department.name} and all associated roles!\n`
+            );
           }
         });
         process.exit();
@@ -157,46 +154,45 @@ const promptDeleteRole = () => {
   });
 };
 
-const promptDeleteDepartment = () => {
-  const sql = `SELECT * from department
+const promptDeleteEmployee = () => {
+  const sql = `SELECT employee.*, role.title AS job_title, role.salary, department.name AS department_name, role.department_id
+    FROM employee 
+    LEFT OUTER JOIN role ON employee.role_id = role.id
+    LEFT OUTER JOIN department ON role.department_id = department.id ORDER BY employee.role_id;
     `;
   db.query(sql, (err, result) => {
     if (err) {
       console.log(err);
     }
-
-    var choices = { departments: [], fullData: [] };
-    result.forEach((department) => {
-      const { id, name } = department;
-      if (!choices.departments.includes(name)) {
-        choices.departments.push(name);
-      }
-      choices.departments.sort();
-      choices.fullData.push({
-        depart_name: name,
-        // The id below is the index to refer to when choosing which data to delete
-        id: id,
-      });
+    var choices = [];
+    result.forEach((employee) => {
+      const { first_name, last_name } = employee;
+      choices.push(`${first_name} ${last_name}`);
+      choices.sort();
     });
     return inquirer
       .prompt([
         {
           type: 'list',
-          name: 'departmentName',
-          message: 'Which Department would you like to delete?',
-          choices: choices.departments,
+          name: 'employeeName',
+          message: 'Which Employee would you like to delete?',
+          choices: choices,
         },
       ])
       .then((data) => {
-        // This block of code will take the choice that was picked and compare it with the full data
-        choices.fullData.forEach((department) => {
-          // Once it finds the chosen department, it extracts the ID and initiated the SQL delete command
-          if (data.departmentName == department.depart_name) {
-            var sql = `DELETE FROM department WHERE id = ${department.id}.`;
+        // This block of code will take the choice that was picked and compare it with the results data
+        result.forEach((employee) => {
+          const firstName = data.employeeName.split(' ')[0];
+          const lastName = data.employeeName.split(' ')[1];
+
+          // Once it finds the chosen role, it extracts the ID and initiated the SQL delete command
+          if (
+            firstName == employee.first_name &&
+            lastName == employee.last_name
+          ) {
+            var sql = `DELETE FROM employee WHERE id = ${employee.id}.`;
             handleQuery(sql, null);
-            console.log(
-              `\nSuccessfully deleted ${department.depart_name} and all associated roles!\n`
-            );
+            console.log(`\nSuccessfully deleted ${firstName} ${lastName}\n`);
           }
         });
         process.exit();
