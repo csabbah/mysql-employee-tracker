@@ -100,9 +100,9 @@ const promptDeleteDepartment = () => {
         },
       ])
       .then((data) => {
-        // This block of code will take the choice that was picked and compare it with the full data
+        // This block of code will take the choice that was picked and compare it with the full data from 'result'
         result.forEach((department) => {
-          // Once it finds the chosen department, it extracts the ID and initiated the SQL delete command
+          // Once it finds the chosen department, it extracts the ID and initiates the SQL delete command
           if (data.departmentName == department.name) {
             var sql = `DELETE FROM department WHERE id = ${department.id}.`;
             handleQuery(sql, null);
@@ -140,7 +140,7 @@ const promptDeleteRole = () => {
         },
       ])
       .then((data) => {
-        // This block of code will take the choice that was picked and compare it with the initial results
+        // This block of code will take the choice that was picked and compare it with the full data 'results'
         result.forEach((role) => {
           // Once it finds the chosen role, it extracts the ID and initiated the SQL delete command
           if (data.roleName == role.title) {
@@ -653,7 +653,7 @@ const promptViewBudget = () => {
 
     var choices = [];
     result.forEach((department) => {
-      const { id, name } = department;
+      const { name } = department;
       if (!choices.includes(name)) {
         choices.push(name);
       }
