@@ -480,8 +480,7 @@ const promptUpdateRole = () => {
     }
 
     // Generate the choices to be used in the list prompts below
-    // Additionally add a fullData object to test the inputted data with
-    var choices = { employees: [], jobs: [], fullData: [] };
+    var choices = { employees: [], jobs: [] };
     result.forEach((employee) => {
       const { first_name, last_name, job_title, role_id, id, department_id } =
         employee;
@@ -494,16 +493,7 @@ const promptUpdateRole = () => {
           choices.jobs.push(job_title);
         }
       }
-
-      choices.fullData.push({
-        // Job title, department id and role id will all be updated.
-        name: [first_name, last_name],
-        job_title: job_title,
-        roleId: role_id,
-        depart_id: department_id,
-        // The id below is the index to refer to when choosing which data to update
-        id: id,
-      });
+      choices.jobs.sort();
     });
 
     return inquirer
@@ -511,7 +501,7 @@ const promptUpdateRole = () => {
         {
           type: 'list',
           name: 'employeeName',
-          message: 'Which employee would you like to do update? (Required)',
+          message: 'Which employee would you like to update? (Required)',
           choices: choices.employees,
         },
         {
@@ -529,10 +519,13 @@ const promptUpdateRole = () => {
           newDepartId: '',
           newRoleTitle: '',
         };
-        choices.fullData.forEach((employee) => {
+        result.forEach((employee) => {
           const firstName = data.employeeName.split(' ')[0];
-          const secondName = data.employeeName.split(' ')[1];
-          if (employee.name[0] == firstName && employee.name[1] == secondName) {
+          const lastName = data.employeeName.split(' ')[1];
+          if (
+            employee.first_name == firstName &&
+            employee.last_name == lastName
+          ) {
             // Extract the index of the chosen employee
             dataToUpdate.id = employee.id;
           }
@@ -540,9 +533,9 @@ const promptUpdateRole = () => {
           if (data.roleToUpdate == employee.job_title) {
             // Run one time to avoid adding multiple times
             if (runOnce) {
-              dataToUpdate.newRoleId = employee.roleId;
+              dataToUpdate.newRoleId = employee.role_id;
               dataToUpdate.newRoleTitle = data.roleToUpdate;
-              dataToUpdate.newDepartId = employee.depart_id;
+              dataToUpdate.newDepartId = employee.department_id;
               runOnce = false;
             }
           }
