@@ -367,19 +367,13 @@ const promptEmployeeDepart = () => {
       console.log(err);
     }
 
-    var choices = { departments: [], fullData: [] };
+    var choices = [];
     result.forEach((department) => {
-      const { id, name } = department;
-      if (!choices.departments.includes(name)) {
-        choices.departments.push(name);
+      const { name } = department;
+      if (!choices.includes(name)) {
+        choices.push(name);
       }
-      choices.departments.sort();
-
-      choices.fullData.push({
-        depart_name: name,
-        // The id below is the index to refer to when choosing which data to delete
-        id: id,
-      });
+      choices.sort();
     });
     return inquirer
       .prompt([
@@ -387,14 +381,14 @@ const promptEmployeeDepart = () => {
           type: 'list',
           name: 'departmentName',
           message: 'Which Department would you like to view all employees?',
-          choices: choices.departments,
+          choices: choices,
         },
       ])
       .then((data) => {
         // This block of code will take the choice that was picked and compare it with the full data
-        choices.fullData.forEach((department) => {
+        result.forEach((department) => {
           // Once it finds the chosen department, it extracts the ID and initiated the SQL delete command
-          if (data.departmentName == department.depart_name) {
+          if (data.departmentName == department.name) {
             const sql = `
             SELECT employee.first_name, employee.last_name, role.title AS job_title, role.salary, department.name AS department
             FROM employee
@@ -406,7 +400,7 @@ const promptEmployeeDepart = () => {
             handleQuery(
               sql,
               null,
-              `All employees from the ${data.departmentName} department`
+              `All employees from the ${data.name} department`
             );
           }
         });
