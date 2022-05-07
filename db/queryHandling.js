@@ -4,7 +4,7 @@ const db = require('./connection');
 try {
   db.connect(console.log('\nDatabase connected in queryHandling.js'));
 } catch (error) {
-  console.log(errr);
+  console.log(error);
 }
 // Import package to illustrate the data through tables
 const cTable = require('console.table');

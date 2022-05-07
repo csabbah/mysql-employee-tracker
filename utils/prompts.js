@@ -4,7 +4,7 @@ const db = require('../db/connection');
 try {
   db.connect(console.log('Database connected in prompts.js\n\n'));
 } catch (error) {
-  console.log(errr);
+  console.log(error);
 }
 const inquirer = require('inquirer');
 const handleQuery = require('../db/queryHandling');
@@ -83,16 +83,11 @@ const promptDeleteEmployee = () => {
     if (err) {
       console.log(err);
     }
-    var choices = { employees: [], fullData: [] };
+    var choices = [];
     result.forEach((employee) => {
-      const { first_name, last_name, id } = employee;
-      choices.employees.push(`${first_name} ${last_name}`);
-      choices.employees.sort();
-      choices.fullData.push({
-        name: [first_name, last_name],
-        // The id below is the index to refer to when choosing which data to delete
-        id: id,
-      });
+      const { first_name, last_name } = employee;
+      choices.push(`${first_name} ${last_name}`);
+      choices.sort();
     });
     return inquirer
       .prompt([
@@ -100,21 +95,23 @@ const promptDeleteEmployee = () => {
           type: 'list',
           name: 'employeeName',
           message: 'Which Employee would you like to delete?',
-          choices: choices.employees,
+          choices: choices,
         },
       ])
       .then((data) => {
-        // This block of code will take the choice that was picked and compare it with the full data
-        choices.fullData.forEach((employee) => {
+        // This block of code will take the choice that was picked and compare it with the results data
+        result.forEach((employee) => {
           const firstName = data.employeeName.split(' ')[0];
           const lastName = data.employeeName.split(' ')[1];
+
           // Once it finds the chosen role, it extracts the ID and initiated the SQL delete command
-          if (firstName == employee.name[0] && lastName == employee.name[1]) {
+          if (
+            firstName == employee.first_name &&
+            lastName == employee.last_name
+          ) {
             var sql = `DELETE FROM employee WHERE id = ${employee.id}.`;
             handleQuery(sql, null);
-            console.log(
-              `\nSuccessfully deleted ${employee.name[0]} ${employee.name[1]}\n`
-            );
+            console.log(`\nSuccessfully deleted ${firstName} ${lastName}\n`);
           }
         });
         process.exit();

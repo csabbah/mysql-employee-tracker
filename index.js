@@ -6,7 +6,7 @@ const db = require('./db/connection');
 try {
   db.connect(console.log('Database connected in index.js'));
 } catch (error) {
-  console.log(errr);
+  console.log(error);
 }
 // Import all prompts (initial and follow up prompts)
 const {
