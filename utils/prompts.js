@@ -126,18 +126,12 @@ const promptDeleteRole = () => {
       console.log(err);
     }
 
-    var choices = { roles: [], fullData: [] };
+    var choices = [];
     result.forEach((role) => {
-      const { title, id } = role;
-      if (!choices.roles.includes(title)) {
-        choices.roles.push(title);
+      console.log(role);
+      if (!choices.includes(role.title)) {
+        choices.push(role.title);
       }
-      choices.roles.sort();
-      choices.fullData.push({
-        title: title,
-        // The id below is the index to refer to when choosing which data to delete
-        id: id,
-      });
     });
     return inquirer
       .prompt([
@@ -145,12 +139,12 @@ const promptDeleteRole = () => {
           type: 'list',
           name: 'roleName',
           message: 'Which Role would you like to delete?',
-          choices: choices.roles,
+          choices: choices,
         },
       ])
       .then((data) => {
-        // This block of code will take the choice that was picked and compare it with the full data
-        choices.fullData.forEach((role) => {
+        // This block of code will take the choice that was picked and compare it with the initial results
+        result.forEach((role) => {
           // Once it finds the chosen role, it extracts the ID and initiated the SQL delete command
           if (data.roleName == role.title) {
             var sql = `DELETE FROM role WHERE id = ${role.id}.`;
