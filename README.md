@@ -61,7 +61,7 @@ Link to the video of execution:
 To view my other applications:
 [Github](https://github.com/csabbah)
 
-If you have questions about this application or general inquiry, please reach out to me via email: carlossaabbah@hotmail.com
+If you have questions about this application or general inquiry, please reach out to me via email: carlossabbah@hotmail.com
 
 ## License
 
