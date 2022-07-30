@@ -7,7 +7,6 @@
 - [Description](#Description)
 - [Installation](#Installation)
 - [Usage](#Usage)
-- [Links](#Links)
 - [Questions](#Questions)
 - [License](#License)
 
@@ -40,11 +39,6 @@ node index
 ```
 
 From there, you can choose how you want to view, retrieve, delete and edit the SQL data through a sequence of command line prompts.
-
-## Links
-
-Link to the video of execution:
-[View here](https://drive.google.com/file/d/1QIFqJB5-SrDG8KaIRtjf5DoF1jFQz44L/view?usp=sharing)
 
 ## Built With
 
